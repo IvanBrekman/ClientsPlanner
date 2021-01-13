@@ -200,8 +200,6 @@ class ChangeClientInfoWindow(QWidget, change_client_wnd.Ui_Form):
             self.items = [res[0] for res in get_data_from_db(MY_DB, 'clients', 'name')]
 
             self.client_cb.addItems(self.items)
-            self.name_label.hide()
-            self.name_edit.hide()
             self.change_client(False)
 
         self.client_cb.currentTextChanged.connect(self.change_client)
@@ -219,6 +217,7 @@ class ChangeClientInfoWindow(QWidget, change_client_wnd.Ui_Form):
 
         self.client_id = info[0]
         self.client_cb.setCurrentIndex(self.items.index(info[1]))
+        self.name_edit.setText(info[1])
         self.phone_edit.setText(info[2])
         self.reg_date_de.setDate(QDate(*map(int, info[3].split('.')[::-1])))
         self.birth_date_de.setDate(QDate(*map(int, info[4].split('.')[::-1])))
@@ -226,8 +225,7 @@ class ChangeClientInfoWindow(QWidget, change_client_wnd.Ui_Form):
         self.duration_sb.setValue(info[6])
 
     def save_new_info(self):
-        cl_name = self.client_cb.currentText()
-        name = f"'{convert_name(self.name_edit.text() if self.is_new else cl_name)}'"
+        name = f"'{convert_name(self.name_edit.text())}'"
         phone = f"'{convert_number(self.phone_edit.text())}'"
         reg_date = f"'{self.reg_date_de.date().day()}.{self.reg_date_de.date().month()}." \
                    f"{self.reg_date_de.date().year()}'"
