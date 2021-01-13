@@ -375,13 +375,17 @@ class PayWindow(QWidget, pay_form.Ui_Form):
         date = f"'{'.'.join(map(str, (date.day, date.month, date.year)))}'"
         time = f"'{dt.datetime.now().hour:02d}:{dt.datetime.now().minute:02d}'"
 
+        need_update = self.update_duration_cb.isChecked()
         client_id = str(get_data_from_db(MY_DB, 'clients', 'id',
                                          {'name': [self.client_cb.currentText()]})[0][0])
+        values = {'lessons_amount': f'lessons_amount + {lesson_amount}',
+                  'duration': CONSTANTS['abonement_duration'] if need_update else 'duration'}
+
         add_data_to_db(MY_DB, 'payments_table',
                        ('date', 'time', 'client_id', 'pay_sum', 'lesson_amount'),
                        (date, time, client_id, money, lesson_amount))
-        update_data_in_db(MY_DB, 'clients', {'lessons_amount': f'lessons_amount + {lesson_amount}'},
-                          {'id': client_id})
+        update_data_in_db(MY_DB, 'clients', values, {'id': client_id})
+
         month, year = date[1:-1].split('.')[1:]
         update_month_report(month, year)
 
@@ -446,7 +450,8 @@ class SettingsWindow(QWidget, settings_wnd.Ui_Form):
     def initUI(self):
         self.setupUi(self)
 
-        self.params = [self.lesson_price_sb, self.lesson_duration_sb, self.max_non_active_period_sb]
+        self.params = [self.lesson_price_sb, self.lesson_duration_sb, self.max_non_active_period_sb,
+                       self.abonement_duration_sb]
         for i, (key, value) in enumerate(list(CONSTANTS.items())[:-2]):
             self.params[i].setValue(int(CONSTANTS[key]))
 
