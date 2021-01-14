@@ -6,143 +6,328 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>600</width>
+    <height>400</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Окно настроек</string>
   </property>
-  <layout class="QFormLayout" name="formLayout">
+  <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
-    <widget class="QLabel" name="label">
-     <property name="font">
-      <font>
-       <family>Arial</family>
-       <pointsize>10</pointsize>
-      </font>
+    <widget class="QTabWidget" name="tabWidget">
+     <property name="currentIndex">
+      <number>0</number>
      </property>
-     <property name="text">
-      <string>Длительность занятия (в минутах)</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="1">
-    <widget class="QSpinBox" name="lesson_duration_sb">
-     <property name="font">
-      <font>
-       <family>Arial</family>
-       <pointsize>10</pointsize>
-      </font>
-     </property>
-     <property name="maximum">
-      <number>10000</number>
-     </property>
-     <property name="singleStep">
-      <number>5</number>
-     </property>
+     <widget class="QWidget" name="tab">
+      <attribute name="title">
+       <string>Основные найстройки</string>
+      </attribute>
+      <layout class="QFormLayout" name="formLayout">
+       <item row="0" column="0">
+        <widget class="QLabel" name="label">
+         <property name="font">
+          <font>
+           <family>Arial</family>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Длительность занятия (в минутах)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QSpinBox" name="lesson_duration_sb">
+         <property name="font">
+          <font>
+           <family>Arial</family>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="maximum">
+          <number>10000</number>
+         </property>
+         <property name="singleStep">
+          <number>5</number>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_2">
+         <property name="font">
+          <font>
+           <family>Arial</family>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Стоимость занятия</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QSpinBox" name="lesson_price_sb">
+         <property name="font">
+          <font>
+           <family>Arial</family>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="maximum">
+          <number>10000</number>
+         </property>
+         <property name="singleStep">
+          <number>50</number>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_4">
+         <property name="font">
+          <font>
+           <family>Arial</family>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Длительность неактивного периода</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QSpinBox" name="max_non_active_period_sb">
+         <property name="font">
+          <font>
+           <family>Arial</family>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="maximum">
+          <number>9999</number>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="label_6">
+         <property name="font">
+          <font>
+           <family>Arial</family>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Стандартная длительность абонемента</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QSpinBox" name="abonement_duration_sb">
+         <property name="font">
+          <font>
+           <family>Arial</family>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="label_5">
+         <property name="font">
+          <font>
+           <family>Arial</family>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Скрывать нулевые строки в статистике</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QCheckBox" name="hide_zero_rows_chb">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="label_3">
+         <property name="font">
+          <font>
+           <family>Arial</family>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Запрет удалять записи прошлых дней</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <widget class="QCheckBox" name="can_delete_chb">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_2">
+      <attribute name="title">
+       <string>Расписание</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_4">
+       <item row="0" column="0">
+        <widget class="QGroupBox" name="days_gb">
+         <property name="title">
+          <string>День недели</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_3">
+          <item row="4" column="0">
+           <widget class="QRadioButton" name="fri_rb">
+            <property name="text">
+             <string>Пятница</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QRadioButton" name="mon_rb">
+            <property name="text">
+             <string>Понедельник</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0">
+           <widget class="QRadioButton" name="sat_rb">
+            <property name="text">
+             <string>Суббота</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QRadioButton" name="wed_rb">
+            <property name="text">
+             <string>Среда</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QRadioButton" name="tue_rb">
+            <property name="text">
+             <string>Вторник</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QRadioButton" name="thu_rb">
+            <property name="text">
+             <string>Четверг</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="0">
+           <widget class="QRadioButton" name="sun_rb">
+            <property name="text">
+             <string>Воскресенье</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QPushButton" name="add_lesson_btn">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>200</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Добавить занятие</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QTableWidget" name="lessons_table">
+         <column>
+          <property name="text">
+           <string>id</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Тип занятия</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Время</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string/>
+          </property>
+         </column>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_3">
+      <attribute name="title">
+       <string>Типы занятий</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="0" column="0">
+        <widget class="QTableWidget" name="lesson_types_table">
+         <column>
+          <property name="text">
+           <string>id</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Тип занятия</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Цвет занятия</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string/>
+          </property>
+         </column>
+        </widget>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
    <item row="1" column="0">
-    <widget class="QLabel" name="label_2">
-     <property name="font">
-      <font>
-       <family>Arial</family>
-       <pointsize>10</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>Стоимость занятия</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="1">
-    <widget class="QSpinBox" name="lesson_price_sb">
-     <property name="font">
-      <font>
-       <family>Arial</family>
-       <pointsize>10</pointsize>
-      </font>
-     </property>
-     <property name="maximum">
-      <number>10000</number>
-     </property>
-     <property name="singleStep">
-      <number>50</number>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="0">
-    <widget class="QLabel" name="label_4">
-     <property name="font">
-      <font>
-       <family>Arial</family>
-       <pointsize>10</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>Длительность неактивного периода</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="1">
-    <widget class="QSpinBox" name="max_non_active_period_sb">
-     <property name="font">
-      <font>
-       <family>Arial</family>
-       <pointsize>10</pointsize>
-      </font>
-     </property>
-     <property name="maximum">
-      <number>9999</number>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="0">
-    <widget class="QLabel" name="label_5">
-     <property name="font">
-      <font>
-       <family>Arial</family>
-       <pointsize>10</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>Скрывать нулевые строки в статистике</string>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="1">
-    <widget class="QCheckBox" name="hide_zero_rows_chb">
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="0">
-    <widget class="QLabel" name="label_3">
-     <property name="font">
-      <font>
-       <family>Arial</family>
-       <pointsize>10</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>Запрет удалять записи прошлых дней</string>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="1">
-    <widget class="QCheckBox" name="can_delete_chb">
-     <property name="text">
-      <string/>
-     </property>
-     <property name="checked">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="6" column="0">
     <widget class="QPushButton" name="save_btn">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="font">
       <font>
        <family>Arial</family>
@@ -153,16 +338,6 @@
       <string>Сохранить и закрыть</string>
      </property>
     </widget>
-   </item>
-   <item row="3" column="0">
-    <widget class="QLabel" name="label_6">
-     <property name="text">
-      <string>Стандартная длительность абонемента</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="1">
-    <widget class="QSpinBox" name="abonement_duration_sb"/>
    </item>
   </layout>
  </widget>

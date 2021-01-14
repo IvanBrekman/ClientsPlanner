@@ -3,7 +3,7 @@ import datetime as dt
 
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget
 from PyQt5.QtWidgets import QCalendarWidget, QTableWidget, QPushButton, QCheckBox
-from PyQt5.QtWidgets import QTableWidgetItem, QHeaderView, QMessageBox
+from PyQt5.QtWidgets import QTableWidgetItem, QHeaderView, QMessageBox, QColorDialog
 
 from PyQt5.QtCore import QDate, QTime
 from PyQt5.QtGui import QColor
@@ -18,10 +18,13 @@ from database_requests import *
 MY_DB = "clients.db"
 MONTHS = {1: 'Январь', 2: 'Февраль', 3: 'Март', 4: 'Апрель', 5: 'Май', 6: 'Июнь',
           7: 'Июль', 8: 'Август', 9: 'Сентябрь', 10: 'Октябрь', 11: 'Ноябрь', 12: 'Декабрь'}
+DAYS = {'Понедельник': 1, 'Вторник': 2, 'Среда': 3, 'Четверг': 4, 'Пятница': 5, 'Суббота': 6,
+        'Воскресенье': 7}
 CONSTANTS = {}
 
 need_show_mes = True
 can_delete_previous_history = False
+lesson_am = 0
 
 red = QColor(255, 0, 0)
 light_red = QColor('#FA8072')
@@ -30,16 +33,18 @@ light_yellow = QColor('#FFFFE0')
 
 
 class AddLessonWindow(QWidget, add_income_client_wnd.Ui_Form):
-    def __init__(self, parent, calendar: QCalendarWidget, time_intervals: list):
+    def __init__(self, parent, table: str, date: (QDate, int), time_intervals: list):
         super().__init__()
         self.initUI()
 
         self.parent = parent
-        self.calendar = calendar
+        self.table = table
+        self.date = date
         self.all_time_intervals = time_intervals
 
     def initUI(self):
         self.setupUi(self)
+        self.setWindowTitle('Добавить занятие')
 
         self.client_label.hide()
         self.client_cb.hide()
@@ -62,8 +67,10 @@ class AddLessonWindow(QWidget, add_income_client_wnd.Ui_Form):
         self.start_lesson_time_te.timeChanged.connect(self.update_end_time)
 
     def add_lesson(self):
-        date = self.calendar.selectedDate()
-        date = f"'{'.'.join(map(str, (date.day(), date.month(), date.year())))}'"
+        if isinstance(self.date, QDate):
+            date = f"'{'.'.join(map(str, (self.date.day(), self.date.month(), self.date.year())))}'"
+        else:
+            date = str(self.date)
 
         start_time = self.start_lesson_time_te.time()
         start_time_str = f'{start_time.hour():02d}:{start_time.minute():02d}'
@@ -83,7 +90,7 @@ class AddLessonWindow(QWidget, add_income_client_wnd.Ui_Form):
 
         lesson_type_id = str(get_data_from_db(MY_DB, 'lesson_types', 'id',
                                               {'name': [self.lesson_type_cb.currentText()]})[0][0])
-        add_data_to_db(MY_DB, 'lessons', ('date', 'time', 'lesson_type_id'),
+        add_data_to_db(MY_DB, self.table, ('date', 'time', 'lesson_type_id'),
                        (date, time, lesson_type_id))
 
         self.message.show()
@@ -306,7 +313,7 @@ class ClientInfoWindow(QWidget, client_info_wnd.Ui_Form):
                                            QTableWidgetItem('Оплата' if info[i][-1] else 'Занятие'))
             for j in range(len(info[0])):
                 self.client_info_table.setItem(i, j + 1, QTableWidgetItem(str(info[i][j])))
-            self.paintRow(i, bool(info[i][-1]))
+            paintRow(self.client_info_table, i, light_green if bool(info[i][-1]) else light_yellow)
 
     def update_table(self):
         """ Обновление таблицы в соответствии с новой датой """
@@ -326,10 +333,7 @@ class ClientInfoWindow(QWidget, client_info_wnd.Ui_Form):
             print(*(attendance + payments))
             self.load_table(attendance, payments)
 
-    def paintRow(self, row, row_type):
-        color = light_green if row_type else light_yellow
-        for col in range(self.client_info_table.columnCount()):
-            self.client_info_table.item(row, col).setBackground(color)
+
 
     def exit(self):
         self.destroy()
@@ -441,13 +445,31 @@ class MoreStatisticWindow(QWidget, more_statistic_wnd.Ui_Form):
 class SettingsWindow(QWidget, settings_wnd.Ui_Form):
     def __init__(self, parent):
         super().__init__()
-        self.initUI()
 
         self.parent = parent
+        self.load_lessons_table = self.load_page2
+
+        self.initUI()
 
     def initUI(self):
         self.setupUi(self)
 
+        self.days = [self.mon_rb, self.tue_rb, self.wed_rb, self.thu_rb, self.fri_rb, self.sat_rb,
+                     self.sun_rb]
+        for rb in self.days:
+            rb.toggled.connect(lambda args: self.load_page2(args))
+
+        self.lessons_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
+        self.lessons_table.setColumnHidden(0, True)
+
+        self.load_page1()
+        self.load_page2()
+        self.load_page3()
+
+        self.add_lesson_btn.clicked.connect(self.show_add_lesson_wnd)
+        self.save_btn.clicked.connect(self.saveNewSettings)
+
+    def load_page1(self):
         self.params = [self.lesson_price_sb, self.lesson_duration_sb, self.max_non_active_period_sb,
                        self.abonement_duration_sb]
         for i, (key, value) in enumerate(list(CONSTANTS.items())[:-2]):
@@ -456,7 +478,117 @@ class SettingsWindow(QWidget, settings_wnd.Ui_Form):
         self.hide_zero_rows_chb.setCheckState(int(CONSTANTS['hide_zero_rows_in_statistic']) * 2)
         self.can_delete_chb.setCheckState(int(not can_delete_previous_history) * 2)
 
-        self.save_btn.clicked.connect(self.saveNewSettings)
+    def load_page2(self, is_checked_rb=None):
+        if is_checked_rb:
+            return
+
+        self.del_lesson_btn = []
+        self.all_intervals = []
+        self.lessons_table.setRowCount(0)
+
+        date = str(DAYS[self.get_selected_day()])
+        info = [list(el) for el in get_data_from_db(MY_DB, 'lessons_timetable',
+                                                    'id, lesson_type_id, time', {'date': [date]})]
+        lessons_type_id = [str(res[1]) for res in info]
+        for i, lt_id in enumerate(lessons_type_id):
+            type_name = get_data_from_db(MY_DB, 'lesson_types', 'name', {'id': [lt_id]})[0][0]
+            info[i][1] = type_name
+        info.sort(key=lambda res: dt.time(*map(int, res[2].split('-')[0].split(':'))))
+
+        for i in range(len(info)):
+            self.lessons_table.setRowCount(self.lessons_table.rowCount() + 1)
+            for j in range(len(info[0])):
+                if j == 2:
+                    t_func = lambda time: dt.time(*map(int, time.split(':')))
+                    self.all_intervals.append(list(map(t_func, info[i][j].split('-'))))
+                self.lessons_table.setItem(i, j, QTableWidgetItem(str(info[i][j])))
+
+            btn = QPushButton('-', self)
+            btn.clicked.connect(lambda x: self.delete_row(self.lessons_table, self.del_lesson_btn,
+                                                          True))
+            self.del_lesson_btn.append(btn)
+            self.lessons_table.setCellWidget(i, 3, btn)
+            self.lessons_table.setItem(i, 3, QTableWidgetItem(""))
+
+            color = get_data_from_db(MY_DB, 'lesson_types', 'color', {'name': [info[i][1]]})[0][0]
+            paintRow(self.lessons_table, i, QColor(color))
+
+        self.lessons_table.horizontalHeader().setSectionResizeMode(2, QHeaderView.ResizeToContents)
+
+    def load_page3(self):
+        self.color_btn = []
+        self.delete_type_btn = []
+        self.lesson_types_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
+        self.lesson_types_table.horizontalHeader().resizeSections(QHeaderView.ResizeToContents)
+        self.lesson_types_table.setColumnHidden(0, True)
+        self.lesson_types_table.setRowCount(1)
+
+        info = get_data_from_db(MY_DB, 'lesson_types', '*')
+
+        for i in range(len(info)):
+            self.lesson_types_table.setRowCount(self.lesson_types_table.rowCount() + 1)
+            for j in range(len(info[0]) - 1):
+                self.lesson_types_table.setItem(i, j, QTableWidgetItem(str(info[i][j])))
+
+            self.add_buttons_in_row(i, info[i][2])
+
+        btn = QPushButton('+', self)
+        btn.clicked.connect(self.add_row)
+        self.lesson_types_table.setCellWidget(self.lesson_types_table.rowCount() - 1, 3, btn)
+
+    def show_add_lesson_wnd(self):
+        self.add_lesson_window = AddLessonWindow(self, 'lessons_timetable',
+                                                 DAYS[self.get_selected_day()], self.all_intervals)
+        self.add_lesson_window.show()
+
+    def get_selected_day(self):
+        for radio_btn in self.days:
+            if radio_btn.isChecked():
+                return radio_btn.text()
+    
+    def add_buttons_in_row(self, row, color):
+        btn = QPushButton('Выбрать цвет', self)
+        btn.setStyleSheet(f'background-color: {color}')
+        btn.clicked.connect(self.choose_color)
+        self.color_btn.append(btn)
+        self.lesson_types_table.setCellWidget(row, 2, btn)
+        self.lesson_types_table.setItem(row, 2, QTableWidgetItem(""))
+
+        btn = QPushButton('-', self)
+        btn.clicked.connect(lambda x: self.delete_row(self.lesson_types_table, self.delete_type_btn))
+        self.delete_type_btn.append(btn)
+        self.lesson_types_table.setCellWidget(row, 3, btn)
+
+    def add_row(self):
+        global lesson_am
+        lesson_am += 1
+
+        self.lesson_types_table.insertRow(rows := self.lesson_types_table.rowCount() - 1)
+        self.lesson_types_table.setItem(rows, 0, QTableWidgetItem(str(rows + 1)))
+        self.lesson_types_table.setItem(rows, 1, QTableWidgetItem('Занятие' + str(lesson_am)))
+        self.add_buttons_in_row(self.lesson_types_table.rowCount() - 2, 'white')
+
+    def choose_color(self):
+        color = QColorDialog.getColor(self.sender().palette().button().color())
+        if color.isValid():
+            self.sender().setStyleSheet(f'background-color: {color.name()}')
+            print(color.name())
+
+    def delete_row(self, table: QTableWidget, array_buttons: (list, tuple), need_delete_in_db=False):
+        array_buttons.pop(row := array_buttons.index(self.sender()))
+        if need_delete_in_db:
+            delete_data_from_db(MY_DB, 'lessons_timetable', {'id': table.item(row, 0).text()})
+        table.removeRow(row)
+
+    def get_lesson_types_info(self):
+        info = []
+        table = self.lesson_types_table
+
+        for i in range(self.lesson_types_table.rowCount() - 1):
+            info.append([f'"{table.item(i, j).text()}"' for j in range(table.columnCount() - 1)])
+            info[i][2] = f'"{self.color_btn[i].palette().button().color().name()}"'
+
+        return info
 
     def saveNewSettings(self):
         global can_delete_previous_history
@@ -468,7 +600,11 @@ class SettingsWindow(QWidget, settings_wnd.Ui_Form):
             update_data_in_db(MY_DB, 'settings', {'value': value}, {'id': i})
 
         update_constants()
-        print(CONSTANTS)
+
+        delete_data_from_db(MY_DB, 'lesson_types', {})
+        for row in self.get_lesson_types_info():
+            add_data_to_db(MY_DB, 'lesson_types', ('id', 'name', 'color'), row)
+
         self.destroy()
 
         self.parent.update_planner_tab_tables()
@@ -522,15 +658,16 @@ class MainWindow(QMainWindow, main_window.Ui_MainWindow):
         self.client_base_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
         self.client_base_table.setColumnHidden(0, True)
 
-        self.calendar.clicked.connect(self.update_planner_tab_tables)
-        self.client_base_table.horizontalHeader().sectionClicked.connect(self.sort_table)
         self.search_line.textChanged.connect(self.search_by_name)
+        self.year_cb.currentTextChanged.connect(self.update_year_statistic)
+        self.client_base_table.horizontalHeader().sectionClicked.connect(self.sort_table)
+        self.calendar.clicked.connect(self.update_planner_tab_tables)
         self.add_lesson_btn.clicked.connect(self.show_add_lesson_wnd)
         self.add_client_btn.clicked.connect(self.show_add_income_client_wnd)
         self.add_client_db_btn.clicked.connect(self.show_add_client_table_wnd)
+        self.pushButton.clicked.connect(self.fill_lessons_automatically)
         self.pay_btn.clicked.connect(self.show_pay_form)
         self.change_client_btn.clicked.connect(self.show_change_client_table_wnd)
-        self.year_cb.currentTextChanged.connect(self.update_year_statistic)
 
     def show_change_client_table_wnd(self):
         try:
@@ -552,7 +689,8 @@ class MainWindow(QMainWindow, main_window.Ui_MainWindow):
         self.add_income_client_wnd.show()
 
     def show_add_lesson_wnd(self):
-        self.add_lesson_window = AddLessonWindow(self, self.calendar, self.lessons_time_intervals)
+        self.add_lesson_window = AddLessonWindow(self, 'lessons', self.calendar.selectedDate(),
+                                                 self.lessons_time_intervals)
         self.add_lesson_window.show()
 
     def show_pay_form(self):
@@ -698,13 +836,15 @@ class MainWindow(QMainWindow, main_window.Ui_MainWindow):
                     self.lessons_delete_buttons.append(btn)
 
                     self.lessons_table.setCellWidget(i, j, btn)
+                    self.lessons_table.setItem(i, j, QTableWidgetItem(""))
                 else:
                     if j == 2:
                         t_func = lambda time: dt.time(*map(int, time.split(':')))
                         self.lessons_time_intervals.append(list(map(t_func, info[i][j].split('-'))))
                     self.lessons_table.setItem(i, j, QTableWidgetItem(str(info[i][j])))
 
-        print(self.lessons_time_intervals)
+            color = get_data_from_db(MY_DB, 'lesson_types', 'color', {'name': [info[i][1]]})[0][0]
+            paintRow(self.lessons_table, i, QColor(color))
 
     def load_month_report_table(self):
         self.more_statistic_buttons = []
@@ -760,6 +900,20 @@ class MainWindow(QMainWindow, main_window.Ui_MainWindow):
         self.lessons_delete_buttons.pop(self.lessons_delete_buttons.index(self.sender()))
         self.lessons_table.removeRow(delete_row)
         delete_data_from_db(MY_DB, 'lessons', {'id': deleted_id})
+    
+    def fill_lessons_automatically(self):
+        date = self.calendar.selectedDate()
+        day = date.dayOfWeek()
+        date = f"'{'.'.join(map(str, (date.day(), date.month(), date.year())))}'"
+        
+        delete_data_from_db(MY_DB, 'lessons', {'date': date[1:-1]})
+
+        for lesson in get_data_from_db(MY_DB, 'lessons_timetable', '*', {'date': [str(day)]}):
+            lesson = list(map(lambda el: f'"{el}"', lesson[1:]))
+            lesson[0] = date
+            add_data_to_db(MY_DB, 'lessons', ('date', 'time', 'lesson_type_id'), lesson)
+
+        self.load_lessons_table()
 
     def sort_table(self, index):
         if index == 2:
@@ -832,6 +986,11 @@ class MainWindow(QMainWindow, main_window.Ui_MainWindow):
         date = dt.date.today()
         date = f'"{date.day}.{date.month}.{date.year}"'
         update_data_in_db(MY_DB, 'settings', {'value': date}, {'param': 'last_activity_date'})
+
+
+def paintRow(table: QTableWidget, row: int, color: QColor):
+    for col in range(table.columnCount()):
+        table.item(row, col).setBackground(color)
 
 
 def calculate_age(born: dt.date) -> str:
