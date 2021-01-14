@@ -19,7 +19,7 @@ def add_data_to_db(db: str, table: str, columns: (list, tuple), values: (list, t
 
     con.commit()
     con.close()
-    print(request, 'added')
+    print('added')
 
 
 def update_data_in_db(db: str, table: str, update_data: dict, conditions: dict) -> None:
@@ -42,8 +42,8 @@ def update_data_in_db(db: str, table: str, update_data: dict, conditions: dict) 
     for column, value in conditions.items():
         request += f"{column} = '{value}' AND "
     request = request[:-5]
-    print(request, ' aaaaaaaaaaaaaa')
 
+    print(request)
     cur.execute(request)
 
     con.commit()
@@ -62,7 +62,7 @@ def delete_data_from_db(db: str, table: str, conditions: dict) -> None:
     con = sqlite3.connect(db)
     cur = con.cursor()
 
-    request = f"""DELETE FROM {table} WHERE """
+    request = f"""DELETE FROM {table}{' WHERE ' if conditions else ''}"""
 
     for column, value in conditions.items():
         request += f"{column} = '{value}' AND "

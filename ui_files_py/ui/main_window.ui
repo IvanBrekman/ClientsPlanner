@@ -193,6 +193,19 @@
           </property>
          </widget>
         </item>
+        <item row="5" column="1">
+         <widget class="QPushButton" name="fill_automatically_btn">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>Заполнить по умолчанию</string>
+          </property>
+         </widget>
+        </item>
        </layout>
       </widget>
       <widget class="QWidget" name="client_tab">
@@ -639,7 +652,7 @@
      <x>0</x>
      <y>0</y>
      <width>860</width>
-     <height>20</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="help_menu">
