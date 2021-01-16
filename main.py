@@ -2,11 +2,12 @@ import sys
 import datetime as dt
 
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget
-from PyQt5.QtWidgets import QCalendarWidget, QTableWidget, QPushButton, QCheckBox
+from PyQt5.QtWidgets import QCalendarWidget, QTableWidget, QPushButton, QCheckBox, QLabel
 from PyQt5.QtWidgets import QTableWidgetItem, QHeaderView, QMessageBox, QColorDialog
 
-from PyQt5.QtCore import QDate, QTime
-from PyQt5.QtGui import QColor
+from PyQt5.QtCore import QDate, QTimer, QTime, QSize, Qt
+from PyQt5.QtGui import QColor, QIcon, QFont
+from PyQt5.QtMultimedia import QSound
 
 from ui_files_py import more_statistic_wnd, pay_form, \
     add_income_client_wnd, about_wnd, main_window, client_info_wnd, change_client_wnd, settings_wnd
@@ -18,13 +19,15 @@ from database_requests import *
 MY_DB = "clients.db"
 MONTHS = {1: 'Январь', 2: 'Февраль', 3: 'Март', 4: 'Апрель', 5: 'Май', 6: 'Июнь',
           7: 'Июль', 8: 'Август', 9: 'Сентябрь', 10: 'Октябрь', 11: 'Ноябрь', 12: 'Декабрь'}
-DAYS = {'Понедельник': 1, 'Вторник': 2, 'Среда': 3, 'Четверг': 4, 'Пятница': 5, 'Суббота': 6,
-        'Воскресенье': 7}
+DAYS = {'Понедельник': 1, 'Вторник': 2, 'Среда': 3, 'Четверг': 4, 'Пятница': 5,
+        'Суббота': 6, 'Воскресенье': 7}
 CONSTANTS = {}
 
 need_show_mes = True
 can_delete_previous_history = False
 lesson_am = 0
+delete_char = chr(10_005)
+more_char = chr(128_269)
 
 red = QColor(255, 0, 0)
 light_red = QColor('#FA8072')
@@ -503,7 +506,7 @@ class SettingsWindow(QWidget, settings_wnd.Ui_Form):
                     self.all_intervals.append(list(map(t_func, info[i][j].split('-'))))
                 self.lessons_table.setItem(i, j, QTableWidgetItem(str(info[i][j])))
 
-            btn = QPushButton('-', self)
+            btn = QPushButton(delete_char, self)
             btn.clicked.connect(lambda x: self.delete_row(self.lessons_table, self.del_lesson_btn,
                                                           True))
             self.del_lesson_btn.append(btn)
@@ -532,7 +535,9 @@ class SettingsWindow(QWidget, settings_wnd.Ui_Form):
 
             self.add_buttons_in_row(i, info[i][2])
 
-        btn = QPushButton('+', self)
+        btn = QPushButton(self)
+        btn.setIcon(QIcon('images/plus.png'))
+        btn.setIconSize(QSize(28, 28))
         btn.clicked.connect(self.add_row)
         self.lesson_types_table.setCellWidget(self.lesson_types_table.rowCount() - 1, 3, btn)
 
@@ -554,7 +559,7 @@ class SettingsWindow(QWidget, settings_wnd.Ui_Form):
         self.lesson_types_table.setCellWidget(row, 2, btn)
         self.lesson_types_table.setItem(row, 2, QTableWidgetItem(""))
 
-        btn = QPushButton('-', self)
+        btn = QPushButton(delete_char, self)
         btn.clicked.connect(lambda x: self.delete_row(self.lesson_types_table, self.delete_type_btn))
         self.delete_type_btn.append(btn)
         self.lesson_types_table.setCellWidget(row, 3, btn)
@@ -612,6 +617,50 @@ class SettingsWindow(QWidget, settings_wnd.Ui_Form):
         self.parent.load_month_report_table()
 
 
+class LessonTimeWindow(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.initUI()
+
+    def initUI(self):
+        self.setWindowTitle('Время занятия')
+        self.setFixedSize(800, 600)
+
+        self.time_left = dt.timedelta(minutes=int(CONSTANTS['lesson_duration']))
+        self.sound = QSound('sounds/end_sound.wav')
+        self.pause = False
+
+        self.time = QLabel(self.time_left.__str__(), self)
+        self.time.setFixedSize(800, 400)
+        self.time.setFont(QFont('Times', 108))
+        self.time.setAlignment(Qt.AlignCenter)
+        self.time.move(0, 75)
+
+        self.stop_btn = QPushButton('Стоп', self)
+        self.stop_btn.setFixedSize(200, 100)
+        self.stop_btn.setFont(QFont('Times', 48))
+        self.stop_btn.move(300, 475)
+        self.stop_btn.clicked.connect(self.switch_pause)
+
+        self.timer = QTimer(self)
+        self.timer.setInterval(1000)
+        self.timer.timeout.connect(self.set_new_time)
+        self.timer.start()
+
+    def set_new_time(self):
+        self.time_left -= dt.timedelta(seconds=1)
+        self.time.setText(self.time_left.__str__())
+
+        if self.time_left.total_seconds() == 0:
+            self.timer.stop()
+            self.sound.play()
+
+    def switch_pause(self):
+        self.pause = not self.pause
+        self.stop_btn.setText('Старт' if self.pause else 'Стоп')
+        self.timer.stop() if self.pause else self.timer.start()
+
+
 class AboutWindow(QWidget, about_wnd.Ui_Form):
     def __init__(self):
         super().__init__()
@@ -662,10 +711,11 @@ class MainWindow(QMainWindow, main_window.Ui_MainWindow):
         self.year_cb.currentTextChanged.connect(self.update_year_statistic)
         self.client_base_table.horizontalHeader().sectionClicked.connect(self.sort_table)
         self.calendar.clicked.connect(self.update_planner_tab_tables)
+        self.start_lesson_btn.clicked.connect(self.show_start_lesson_wnd)
+        self.fill_automatically_btn.clicked.connect(self.fill_lessons_automatically)
         self.add_lesson_btn.clicked.connect(self.show_add_lesson_wnd)
         self.add_client_btn.clicked.connect(self.show_add_income_client_wnd)
         self.add_client_db_btn.clicked.connect(self.show_add_client_table_wnd)
-        self.pushButton.clicked.connect(self.fill_lessons_automatically)
         self.pay_btn.clicked.connect(self.show_pay_form)
         self.change_client_btn.clicked.connect(self.show_change_client_table_wnd)
 
@@ -687,6 +737,10 @@ class MainWindow(QMainWindow, main_window.Ui_MainWindow):
     def show_add_income_client_wnd(self):
         self.add_income_client_wnd = AddIncomeClientWindow(self, self.calendar)
         self.add_income_client_wnd.show()
+
+    def show_start_lesson_wnd(self):
+        self.start_lesson_wnd = LessonTimeWindow()
+        self.start_lesson_wnd.show()
 
     def show_add_lesson_wnd(self):
         self.add_lesson_window = AddLessonWindow(self, 'lessons', self.calendar.selectedDate(),
@@ -794,7 +848,7 @@ class MainWindow(QMainWindow, main_window.Ui_MainWindow):
             self.incoming_clients_table.setRowCount(self.incoming_clients_table.rowCount() + 1)
             for j in range(len(info[0]) + 1):
                 if j == 0:
-                    btn = QPushButton('-', self)
+                    btn = QPushButton(delete_char, self)
                     btn.clicked.connect(self.delete_row_from_incoming_clients_table)
                     if (not can_delete_previous_history and
                             dt.date(*map(int, date.split('.')[::-1])) < dt.date.today()):
@@ -828,7 +882,7 @@ class MainWindow(QMainWindow, main_window.Ui_MainWindow):
             self.lessons_table.setRowCount(self.lessons_table.rowCount() + 1)
             for j in range(len(info[0]) + 1):
                 if j == len(info[0]):
-                    btn = QPushButton('-', self)
+                    btn = QPushButton(delete_char, self)
                     btn.clicked.connect(self.delete_row_from_lessons_table)
                     if (not can_delete_previous_history and
                             dt.date(*map(int, date.split('.')[::-1])) < dt.date.today()):
@@ -868,7 +922,7 @@ class MainWindow(QMainWindow, main_window.Ui_MainWindow):
             else:
                 self.month_reports_table.showRow(i)
 
-            btn = QPushButton('+', self)
+            btn = QPushButton(more_char, self)
             btn.clicked.connect(self.show_more_statistic)
             self.more_statistic_buttons.append(btn)
 
