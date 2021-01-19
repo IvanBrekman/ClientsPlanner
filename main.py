@@ -336,8 +336,6 @@ class ClientInfoWindow(QWidget, client_info_wnd.Ui_Form):
             print(*(attendance + payments))
             self.load_table(attendance, payments)
 
-
-
     def exit(self):
         self.destroy()
 
@@ -606,7 +604,7 @@ class SettingsWindow(QWidget, settings_wnd.Ui_Form):
         can_delete_previous_history = not self.can_delete_chb.isChecked()
 
         values = ([f"'{param.text()}'" for param in self.spin_boxes + self.line_edits] +
-                  [int(self.hide_zero_rows_chb.isChecked())])
+                  [str(int(self.hide_zero_rows_chb.isChecked()))])
         for i, value in enumerate(values, 1):
             update_data_in_db(MY_DB, 'settings', {'value': value}, {'id': i})
 
