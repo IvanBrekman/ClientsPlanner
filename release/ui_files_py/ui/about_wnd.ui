@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>770</width>
+    <height>500</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>О программе</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Calibri'; font-size:18pt; background-color:#ffffff;&quot;&gt;Описание функционала приложения&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:10.5pt; background-color:#ffffff;&quot;&gt;Данное приложение предназначено для учёта клиентов спортивного комплекса.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QTabWidget" name="tabWidget">
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="tab">
+      <attribute name="title">
+       <string>Планировщик</string>
+      </attribute>
+      <layout class="QFormLayout" name="formLayout">
+       <item row="0" column="0" colspan="2">
+        <widget class="QScrollArea" name="scrollArea_2">
+         <property name="widgetResizable">
+          <bool>true</bool>
+         </property>
+         <widget class="QWidget" name="scrollAreaWidgetContents_2">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>-454</y>
+            <width>709</width>
+            <height>826</height>
+           </rect>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_6">
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_2">
+             <property name="text">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt; font-weight:600; text-decoration: underline; color:#7030a0; background-color:#ffffff;&quot;&gt;Планировщик&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Wingdings'; font-size:11pt;&quot;&gt;Ø&lt;/span&gt;&lt;span style=&quot; font-size:11pt; text-decoration: underline;&quot;&gt;Добавить занятие на выбранную дату и время:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;....&lt;/span&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10.5pt; color:#434343;&quot;&gt;1. &lt;/span&gt;&lt;span style=&quot; font-size:10.5pt; color:#434343; background-color:#ffffff;&quot;&gt;Выберите дату на календаре.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;....&lt;/span&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10.5pt; color:#434343;&quot;&gt;2. &lt;/span&gt;&lt;span style=&quot; font-size:10.5pt; color:#434343; background-color:#ffffff;&quot;&gt;Нажмите на кнопку «Добавить занятие», размещенную в нижней центральной части окна.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;....&lt;/span&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10.5pt; color:#434343;&quot;&gt;3. &lt;/span&gt;&lt;span style=&quot; font-size:10.5pt; color:#434343; background-color:#ffffff;&quot;&gt;В открывшемся окне выберите&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;........&lt;/span&gt;&lt;span style=&quot; font-family:'Courier New'; font-size:10pt; color:#434343;&quot;&gt;o &lt;/span&gt;&lt;span style=&quot; font-size:10pt; color:#434343; background-color:#ffffff;&quot;&gt;время начала и окончания занятия*&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;........&lt;/span&gt;&lt;span style=&quot; font-family:'Courier New'; font-size:10pt; color:#434343;&quot;&gt;o &lt;/span&gt;&lt;span style=&quot; font-size:10pt; color:#434343; background-color:#ffffff;&quot;&gt;тип занятия&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;....&lt;/span&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10.5pt; color:#434343;&quot;&gt;4. &lt;/span&gt;&lt;span style=&quot; font-size:10.5pt; color:#434343; background-color:#ffffff;&quot;&gt;Нажмите кнопку «Добавить»&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;....&lt;/span&gt;&lt;span style=&quot; font-size:10pt; color:#434343; background-color:#ffffff;&quot;&gt;*При введении некорректного времени программа предупредит об ошибке.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Wingdings'; font-size:11pt;&quot;&gt;Ø&lt;/span&gt;&lt;span style=&quot; font-size:11pt; text-decoration: underline;&quot;&gt;Удалить занятие:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;....&lt;/span&gt;&lt;span style=&quot; font-size:11pt; color:#434343; background-color:#ffffff;&quot;&gt;Нажмите кнопку «Крест» в строке с занятием.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Wingdings'; font-size:11pt;&quot;&gt;Ø&lt;/span&gt;&lt;span style=&quot; font-size:11pt; text-decoration: underline;&quot;&gt;Добавить клиента на выбранную дату и время:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;....&lt;/span&gt;&lt;span style=&quot; font-size:11pt; color:#434343;&quot;&gt;1.&lt;/span&gt;&lt;span style=&quot; font-size:11pt; color:#434343; background-color:#ffffff;&quot;&gt;Выберите дату на календаре.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;....&lt;/span&gt;&lt;span style=&quot; font-size:11pt; color:#434343;&quot;&gt;2. &lt;/span&gt;&lt;span style=&quot; font-size:11pt; color:#434343; background-color:#ffffff;&quot;&gt;Нажмите на кнопку «Добавить клиента», размещенную в нижней правом углу окна.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;....&lt;/span&gt;&lt;span style=&quot; font-size:11pt; color:#434343;&quot;&gt;3. &lt;/span&gt;&lt;span style=&quot; font-size:11pt; color:#434343; background-color:#ffffff;&quot;&gt;В открывшемся окне выберите&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;........&lt;/span&gt;&lt;span style=&quot; font-family:'Courier New'; font-size:10pt; color:#434343;&quot;&gt;o &lt;/span&gt;&lt;span style=&quot; font-size:10pt; color:#434343; background-color:#ffffff;&quot;&gt;ФИО клиента&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;........&lt;/span&gt;&lt;span style=&quot; font-family:'Courier New'; font-size:10pt; color:#434343;&quot;&gt;o &lt;/span&gt;&lt;span style=&quot; font-size:10pt; color:#434343; background-color:#ffffff;&quot;&gt;время начала и окончания занятия*&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;........&lt;/span&gt;&lt;span style=&quot; font-family:'Courier New'; font-size:10pt; color:#434343;&quot;&gt;o &lt;/span&gt;&lt;span style=&quot; font-size:10pt; color:#434343; background-color:#ffffff;&quot;&gt;тип занятия&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;....&lt;/span&gt;&lt;span style=&quot; font-size:10.5pt; color:#434343;&quot;&gt;4. &lt;/span&gt;&lt;span style=&quot; font-size:10.5pt; color:#434343; background-color:#ffffff;&quot;&gt;Нажмите кнопку «Добавить»&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;....&lt;/span&gt;&lt;span style=&quot; font-size:10pt; color:#434343; background-color:#ffffff;&quot;&gt;*При введении некорректного времени программа предупредит об ошибке.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Wingdings'; font-size:11pt;&quot;&gt;Ø&lt;/span&gt;&lt;span style=&quot; font-size:11pt; text-decoration: underline;&quot;&gt;Удалить клиента:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;....&lt;/span&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:11pt; color:#434343;&quot;&gt;1. &lt;/span&gt;&lt;span style=&quot; font-size:11pt; color:#434343; background-color:#ffffff;&quot;&gt;Нажмите кнопку «Крест» в строке с клиентом.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;....&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Примечание: по умолчанию удалять можно только занятия в текущую дату.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;....&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Снять запрет на удаление записей прошлых дней можно в настройках приложения.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Wingdings'; font-size:11pt;&quot;&gt;Ø&lt;/span&gt;&lt;span style=&quot; font-size:11pt; text-decoration: underline;&quot;&gt;Начать Занятие:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;....&lt;/span&gt;&lt;span style=&quot; font-size:11pt; color:#434343; background-color:#ffffff;&quot;&gt;1. Нажмите кнопку &amp;quot;Начать занятие&amp;quot;. В открывшемся окне запустится таймер для занятия.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;....&lt;/span&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:11pt; color:#434343;&quot;&gt;2.&lt;/span&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;/&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:11pt; color:#434343;&quot;&gt;Чтобы остановить или возобновить время нажмите на кнопку &amp;quot;Стоп/Старт&amp;quot;.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;....&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Примечание: По окончании времени вы услышите звуковой сигнал.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_2">
+      <attribute name="title">
+       <string>Клиенты</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_3">
+       <item row="0" column="0">
+        <widget class="QScrollArea" name="scrollArea">
+         <property name="widgetResizable">
+          <bool>true</bool>
+         </property>
+         <widget class="QWidget" name="scrollAreaWidgetContents">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>709</width>
+            <height>930</height>
+           </rect>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_7">
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_3">
+             <property name="text">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt; font-weight:600; text-decoration: underline; color:#7030a0; background-color:#ffffff;&quot;&gt;Клиенты&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Wingdings'; font-size:11pt;&quot;&gt;Ø&lt;/span&gt;&lt;span style=&quot; font-size:11pt; text-decoration: underline;&quot;&gt;Добавление нового клиента (в базу данных):&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;....&lt;/span&gt;&lt;span style=&quot; font-size:10.5pt; color:#434343;&quot;&gt;1. &lt;/span&gt;&lt;span style=&quot; font-size:10.5pt; color:#434343; background-color:#ffffff;&quot;&gt;Введите необходимую информацию по клиенту:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;........&lt;/span&gt;&lt;span style=&quot; font-family:'Courier New'; font-size:10pt; color:#434343;&quot;&gt;o &lt;/span&gt;&lt;span style=&quot; font-size:10pt; color:#434343; background-color:#ffffff;&quot;&gt;ФИО&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;........&lt;/span&gt;&lt;span style=&quot; font-family:'Courier New'; font-size:10pt; color:#434343;&quot;&gt;o &lt;/span&gt;&lt;span style=&quot; font-size:10pt; color:#434343; background-color:#ffffff;&quot;&gt;Номер телефон&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;........&lt;/span&gt;&lt;span style=&quot; font-family:'Courier New'; font-size:10pt; color:#434343;&quot;&gt;o &lt;/span&gt;&lt;span style=&quot; font-size:10pt; color:#434343; background-color:#ffffff;&quot;&gt;Дату регистрации&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;........&lt;/span&gt;&lt;span style=&quot; font-family:'Courier New'; font-size:10pt; color:#434343;&quot;&gt;o &lt;/span&gt;&lt;span style=&quot; font-size:10pt; color:#434343; background-color:#ffffff;&quot;&gt;Дату рождения&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;........&lt;/span&gt;&lt;span style=&quot; font-family:'Courier New'; font-size:10pt; color:#434343;&quot;&gt;o &lt;/span&gt;&lt;span style=&quot; font-size:10pt; color:#434343; background-color:#ffffff;&quot;&gt;Количество оплаченных занятий&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;........&lt;/span&gt;&lt;span style=&quot; font-family:'Courier New'; font-size:10pt; color:#434343;&quot;&gt;o &lt;/span&gt;&lt;span style=&quot; font-size:10pt; color:#434343; background-color:#ffffff;&quot;&gt;Длительность абонемента&lt;/span&gt;&lt;span style=&quot; font-family:'Calibri'; font-size:11pt;&quot;&gt;&lt;br/&gt;&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;....&lt;/span&gt;&lt;span style=&quot; font-size:10.5pt; color:#434343;&quot;&gt;2. &lt;/span&gt;&lt;span style=&quot; font-size:10.5pt; color:#434343; background-color:#ffffff;&quot;&gt;Нажмите кнопку «Добавить»&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Wingdings'; font-size:11pt;&quot;&gt;Ø&lt;/span&gt;&lt;span style=&quot; font-size:11pt; text-decoration: underline;&quot;&gt;Поиск по ФИО клиента:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;....&lt;/span&gt;&lt;span style=&quot; font-size:11pt; color:#434343; background-color:#ffffff;&quot;&gt;Начните вводить в строку поиска, расположенную в правой части окна,&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;....&lt;/span&gt;&lt;span style=&quot; font-size:11pt; color:#434343; background-color:#ffffff;&quot;&gt;ФИО клиента и в таблице будут выведены все клиенты,&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;....&lt;/span&gt;&lt;span style=&quot; font-size:11pt; color:#434343; background-color:#ffffff;&quot;&gt;в ФИО которых входит введенная подстрока.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Wingdings'; font-size:11pt;&quot;&gt;Ø&lt;/span&gt;&lt;span style=&quot; font-size:11pt; text-decoration: underline;&quot;&gt;Внесение клиентом оплаты:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;....&lt;/span&gt;&lt;span style=&quot; font-size:10.5pt; color:#434343;&quot;&gt;1. &lt;/span&gt;&lt;span style=&quot; font-size:10.5pt; color:#434343; background-color:#ffffff;&quot;&gt;Выберите&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;........&lt;/span&gt;&lt;span style=&quot; font-family:'Courier New'; font-size:10pt; color:#434343;&quot;&gt;o &lt;/span&gt;&lt;span style=&quot; font-size:10pt; color:#434343; background-color:#ffffff;&quot;&gt;Клиента&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;........&lt;/span&gt;&lt;span style=&quot; font-family:'Courier New'; font-size:10pt; color:#434343;&quot;&gt;o &lt;/span&gt;&lt;span style=&quot; font-size:10pt; color:#434343; background-color:#ffffff;&quot;&gt;Внесенную клиентом сумму&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;........&lt;/span&gt;&lt;span style=&quot; font-family:'Courier New'; font-size:10pt; color:#434343;&quot;&gt;o &lt;/span&gt;&lt;span style=&quot; font-size:10pt; color:#434343; background-color:#ffffff;&quot;&gt;Количество (оплачиваемых) занятий&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;....&lt;/span&gt;&lt;span style=&quot; font-size:10.5pt; color:#434343;&quot;&gt;2. &lt;/span&gt;&lt;span style=&quot; font-size:10.5pt; color:#434343; background-color:#ffffff;&quot;&gt;Нажмите кнопку «Оплатить».&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Wingdings'; font-size:11pt;&quot;&gt;Ø&lt;/span&gt;&lt;span style=&quot; font-size:11pt; text-decoration: underline;&quot;&gt;Изменение данных выбранного клиента:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;....&lt;/span&gt;&lt;span style=&quot; font-size:10.5pt; color:#434343;&quot;&gt;1. &lt;/span&gt;&lt;span style=&quot; font-size:10.5pt; color:#434343; background-color:#ffffff;&quot;&gt;Нажмите на любую ячейку в строке клиента чьи данные необходимо изменить.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;....&lt;/span&gt;&lt;span style=&quot; font-size:10.5pt; color:#434343;&quot;&gt;2. &lt;/span&gt;&lt;span style=&quot; font-size:10.5pt; color:#434343; background-color:#ffffff;&quot;&gt;В открывшемся окне внесите необходимые изменения. &lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;....&lt;/span&gt;&lt;span style=&quot; font-size:10.5pt; color:#434343;&quot;&gt;3. &lt;/span&gt;&lt;span style=&quot; font-size:10.5pt; color:#434343; background-color:#ffffff;&quot;&gt;Нажмите кнопку «Внести изменения».&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Wingdings'; font-size:11pt;&quot;&gt;Ø&lt;/span&gt;&lt;span style=&quot; font-size:11pt; text-decoration: underline;&quot;&gt;Сортировка таблицы по столбцу:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;....&lt;/span&gt;&lt;span style=&quot; font-size:10.5pt; color:#434343; background-color:#ffffff;&quot;&gt;Кликните на столбец, по которому нужно отсортировать таблицу&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;........&lt;/span&gt;&lt;span style=&quot; font-family:'Courier New'; font-size:10pt; color:#434343;&quot;&gt;o &lt;/span&gt;&lt;span style=&quot; font-size:10pt; color:#434343; background-color:#ffffff;&quot;&gt;1 раз – сортировка по возрастанию&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;........&lt;/span&gt;&lt;span style=&quot; font-family:'Courier New'; font-size:10pt; color:#434343;&quot;&gt;o &lt;/span&gt;&lt;span style=&quot; font-size:10pt; color:#434343; background-color:#ffffff;&quot;&gt;2 раза – сортировка по убыванию&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Wingdings'; font-size:11pt;&quot;&gt;Ø&lt;/span&gt;&lt;span style=&quot; font-size:11pt; text-decoration: underline;&quot;&gt;Отчет по каждому клиенту:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;....&lt;/span&gt;&lt;span style=&quot; font-size:10.5pt; color:#434343;&quot;&gt;1. &lt;/span&gt;&lt;span style=&quot; font-size:10.5pt; color:#434343; background-color:#ffffff;&quot;&gt;Кликните на кнопку нужного клиента&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;....&lt;/span&gt;&lt;span style=&quot; font-size:10.5pt; color:#434343;&quot;&gt;2. &lt;/span&gt;&lt;span style=&quot; font-size:10.5pt; color:#434343; background-color:#ffffff;&quot;&gt;В открывшемся окне Вы можете просмотреть историю клиента за выбранный период.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_3">
+      <attribute name="title">
+       <string>Статистика</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_4">
+       <item row="0" column="0">
+        <widget class="QScrollArea" name="scrollArea_3">
+         <property name="widgetResizable">
+          <bool>true</bool>
+         </property>
+         <widget class="QWidget" name="scrollAreaWidgetContents_3">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>726</width>
+            <height>372</height>
+           </rect>
+          </property>
+          <widget class="QLabel" name="label_4">
+           <property name="geometry">
+            <rect>
+             <x>9</x>
+             <y>9</y>
+             <width>659</width>
+             <height>107</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt; text-decoration: underline; color:#7030a0; background-color:#ffffff;&quot;&gt;Статистика&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Wingdings'; font-size:11pt;&quot;&gt;Ø&lt;/span&gt;&lt;span style=&quot; font-size:11pt; text-decoration: underline;&quot;&gt;Представление информации о количестве посещений занятий и заработанной сумме за год.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;....&lt;/span&gt;&lt;span style=&quot; font-size:10.5pt; color:#434343;&quot;&gt;1.&lt;/span&gt;&lt;span style=&quot; font-size:10.5pt; color:#434343; background-color:#ffffff;&quot;&gt;Выберите год.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;....&lt;/span&gt;&lt;span style=&quot; font-size:10.5pt; color:#434343;&quot;&gt;2. &lt;/span&gt;&lt;span style=&quot; font-size:10.5pt; color:#434343; background-color:#ffffff;&quot;&gt;Нажмите на кнопку «Лупа», чтобы узнать подробную информацию по выбранному месяцу.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+          </widget>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_4">
+      <attribute name="title">
+       <string>Настройки</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_5">
+       <item row="0" column="0">
+        <widget class="QScrollArea" name="scrollArea_4">
+         <property name="widgetResizable">
+          <bool>true</bool>
+         </property>
+         <widget class="QWidget" name="scrollAreaWidgetContents_4">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>709</width>
+            <height>477</height>
+           </rect>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_2">
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_5">
+             <property name="text">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt; text-decoration: underline; color:#7030a0; background-color:#ffffff;&quot;&gt;Настройки&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Wingdings'; font-size:11pt;&quot;&gt;Ø&lt;/span&gt;&lt;span style=&quot; font-size:11pt; text-decoration: underline;&quot;&gt;Основные настройки:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;....&lt;/span&gt;&lt;span style=&quot; font-size:10.5pt; color:#434343;&quot;&gt;1. Укажите необходимые значения и НАЖМИТЕ &amp;quot;Сохранить и выйти&amp;quot;, чтобы внести все изменения.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Wingdings'; font-size:11pt;&quot;&gt;Ø&lt;/span&gt;&lt;span style=&quot; font-size:11pt; text-decoration: underline;&quot;&gt;Расписание:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;....&lt;/span&gt;&lt;span style=&quot; font-size:10.5pt; color:#434343;&quot;&gt;1. Выберите день недели в списке.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;....&lt;/span&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:11pt; color:#434343;&quot;&gt;2&lt;/span&gt;&lt;span style=&quot; font-size:11pt; color:#434343;&quot;&gt;.&lt;/span&gt;&lt;span style=&quot; font-size:10.5pt; color:#434343;&quot;&gt; Редактируйте расписание. Вы можете удалять и добавлять новые записи аналогично добавлению&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;....&lt;/span&gt;&lt;span style=&quot; font-size:10.5pt; color:#434343;&quot;&gt;занятий в Планировщике.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;....&lt;/span&gt;&lt;span style=&quot; font-size:10.5pt; color:#434343;&quot;&gt;Примечание: Редактирование в этой вкладке происходит сразу и не требует нажатия&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;....&lt;/span&gt;&lt;span style=&quot; font-size:10.5pt; color:#434343;&quot;&gt;&amp;quot;Сохраннить и выйти&amp;quot; для подтверждения изменений.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Wingdings'; font-size:11pt;&quot;&gt;Ø&lt;/span&gt;&lt;span style=&quot; font-size:11pt; text-decoration: underline;&quot;&gt;Типы занятий:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;....&lt;/span&gt;&lt;span style=&quot; font-size:10.5pt; color:#434343;&quot;&gt;1. Чтобы изменить название занятия кликните по нему дважды.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;....&lt;/span&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:11pt; color:#434343;&quot;&gt;2.Для изменения цвета нажмите на кнопку &amp;quot;Выбрать цвет&amp;quot; и подберите его на палитре,&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;....&lt;/span&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:11pt; color:#434343;&quot;&gt;после чего нажмите кнопку &amp;quot;Ок&amp;quot;.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;....&lt;/span&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:11pt; color:#434343;&quot;&gt;3.Для удаления занятия нажмите на кнопку &amp;quot;Крестик&amp;quot;.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;....&lt;/span&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:11pt; color:#434343;&quot;&gt;4&lt;/span&gt;&lt;span style=&quot; font-size:11pt; color:#434343;&quot;&gt;.&lt;/span&gt;&lt;span style=&quot; font-size:10.5pt; color:#434343;&quot;&gt; Д&lt;/span&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:11pt; color:#434343;&quot;&gt;ля добавления на кнопку &amp;quot;Плюс&amp;quot; и заполните информацию о занятии.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:10pt; color:#434343;&quot;&gt;....5. &lt;/span&gt;&lt;span style=&quot; font-family:'Roboto'; font-size:11pt; color:#434343;&quot;&gt;НАЖМИТЕ &amp;quot;Сохранить и выйти&amp;quot;, чтобы подтвердить внесенные изменения.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

@@ -582,7 +582,7 @@ class SettingsWindow(QWidget, settings_wnd.Ui_Form):
     def delete_row(self, table: QTableWidget, array_buttons: (list, tuple), need_delete_in_db=False):
         array_buttons.pop(row := array_buttons.index(self.sender()))
         if need_delete_in_db:
-            delete_data_from_db(MY_DB, 'lessons_timetable', {'id': table.item(row, 0).text()})
+            delete_data_from_db(MY_DB, 'lessons_timetable', {'id': [table.item(row, 0).text()]})
         table.removeRow(row)
 
     def get_lesson_types_info(self):
@@ -609,6 +609,9 @@ class SettingsWindow(QWidget, settings_wnd.Ui_Form):
         delete_data_from_db(MY_DB, 'lesson_types', {})
         for row in self.get_lesson_types_info():
             add_data_to_db(MY_DB, 'lesson_types', ('id', 'name', 'color'), row)
+        ids = [str(res[0]) for res in get_data_from_db(MY_DB, 'lesson_types', 'id')]
+        delete_data_from_db(MY_DB, 'lessons', {'lesson_type_id': ids}, True)
+        delete_data_from_db(MY_DB, 'lessons_timetable', {'lesson_type_id': ids}, True)
 
         self.destroy()
 
@@ -654,6 +657,7 @@ class LessonTimeWindow(QWidget):
         if self.time_left.total_seconds() == 0:
             self.timer.stop()
             self.sound.play()
+            self.stop_btn.setEnabled(False)
 
     def switch_pause(self):
         self.pause = not self.pause
@@ -939,7 +943,7 @@ class MainWindow(QMainWindow, main_window.Ui_MainWindow):
 
         self.clients_delete_buttons.pop(self.clients_delete_buttons.index(self.sender()))
         self.incoming_clients_table.removeRow(delete_row)
-        delete_data_from_db(MY_DB, 'clients_attendance', {'id': deleted_id})
+        delete_data_from_db(MY_DB, 'clients_attendance', {'id': [deleted_id]})
 
         month, year = date.split('.')[1:]
         update_month_report(month, year)
@@ -953,14 +957,14 @@ class MainWindow(QMainWindow, main_window.Ui_MainWindow):
         self.lessons_time_intervals.pop(delete_row)
         self.lessons_delete_buttons.pop(self.lessons_delete_buttons.index(self.sender()))
         self.lessons_table.removeRow(delete_row)
-        delete_data_from_db(MY_DB, 'lessons', {'id': deleted_id})
+        delete_data_from_db(MY_DB, 'lessons', {'id': [deleted_id]})
     
     def fill_lessons_automatically(self):
         date = self.calendar.selectedDate()
         day = date.dayOfWeek()
         date = f"'{'.'.join(map(str, (date.day(), date.month(), date.year())))}'"
         
-        delete_data_from_db(MY_DB, 'lessons', {'date': date[1:-1]})
+        delete_data_from_db(MY_DB, 'lessons', {'date': [date[1:-1]]})
 
         for lesson in get_data_from_db(MY_DB, 'lessons_timetable', '*', {'date': [str(day)]}):
             lesson = list(map(lambda el: f'"{el}"', lesson[1:]))
