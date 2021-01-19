@@ -473,10 +473,15 @@ class SettingsWindow(QWidget, settings_wnd.Ui_Form):
         self.save_btn.clicked.connect(self.saveNewSettings)
 
     def load_page1(self):
-        self.params = [self.lesson_price_sb, self.lesson_duration_sb, self.max_non_active_period_sb,
-                       self.abonement_duration_sb]
-        for i, (key, value) in enumerate(list(CONSTANTS.items())[:-2]):
-            self.params[i].setValue(int(CONSTANTS[key]))
+        self.spin_boxes = [self.lesson_price_sb, self.lesson_duration_sb,
+                           self.max_non_active_period_sb, self.abonement_duration_sb]
+        for i, (key, value) in enumerate(list(CONSTANTS.items())[:-4]):
+            self.spin_boxes[i].setValue(int(value))
+
+        print(CONSTANTS)
+        self.line_edits = [self.org_name_le, self.org_slogan_le]
+        for i, (key, value) in enumerate(list(CONSTANTS.items())[-4:-2]):
+            self.line_edits[i].setText(value)
 
         self.hide_zero_rows_chb.setCheckState(int(CONSTANTS['hide_zero_rows_in_statistic']) * 2)
         self.can_delete_chb.setCheckState(int(not can_delete_previous_history) * 2)
@@ -600,7 +605,8 @@ class SettingsWindow(QWidget, settings_wnd.Ui_Form):
 
         can_delete_previous_history = not self.can_delete_chb.isChecked()
 
-        values = [param.text() for param in self.params] + [int(self.hide_zero_rows_chb.isChecked())]
+        values = ([f"'{param.text()}'" for param in self.spin_boxes + self.line_edits] +
+                  [int(self.hide_zero_rows_chb.isChecked())])
         for i, value in enumerate(values, 1):
             update_data_in_db(MY_DB, 'settings', {'value': value}, {'id': i})
 
@@ -615,6 +621,8 @@ class SettingsWindow(QWidget, settings_wnd.Ui_Form):
 
         self.destroy()
 
+        self.parent.setWindowTitle(f'Расписание занятий {CONSTANTS["org_name"]}')
+        self.parent.slogan_label.setText(CONSTANTS["org_slogan"])
         self.parent.update_planner_tab_tables()
         self.parent.load_client_table()
         self.parent.load_month_report_table()
@@ -681,6 +689,8 @@ class MainWindow(QMainWindow, main_window.Ui_MainWindow):
 
     def initUI(self):
         self.setupUi(self)
+        self.setWindowTitle(f'Расписание занятий {CONSTANTS["org_name"]}')
+        self.slogan_label.setText(CONSTANTS["org_slogan"])
 
         self.ordering_index = None
         self.ordering = False

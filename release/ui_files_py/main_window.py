@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(860, 550)
+        MainWindow.resize(860, 650)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
@@ -338,6 +338,14 @@ class Ui_MainWindow(object):
         self.horizontalLayout.addLayout(self.verticalLayout)
         self.tabWidget.addTab(self.statistic_tab, "")
         self.gridLayout.addWidget(self.tabWidget, 1, 0, 1, 1)
+        self.slogan_label = QtWidgets.QLabel(self.centralwidget)
+        font = QtGui.QFont()
+        font.setFamily("Segoe Print")
+        font.setPointSize(20)
+        self.slogan_label.setFont(font)
+        self.slogan_label.setText("")
+        self.slogan_label.setObjectName("slogan_label")
+        self.gridLayout.addWidget(self.slogan_label, 2, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 860, 21))
@@ -365,7 +373,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "Расписание занятий Emotion Dance"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Расписание занятий"))
         self.label_17.setText(_translate("MainWindow", "Пришедшие клиенты"))
         self.start_lesson_btn.setText(_translate("MainWindow", "Начать занятие"))
         self.label_16.setText(_translate("MainWindow", "Занятия на текущий день"))
