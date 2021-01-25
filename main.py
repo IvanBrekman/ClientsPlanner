@@ -1,16 +1,16 @@
 import sys
+import pyglet
 import datetime as dt
 
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget
-from PyQt5.QtWidgets import QCalendarWidget, QTableWidget, QPushButton, QCheckBox, QLabel
-from PyQt5.QtWidgets import QTableWidgetItem, QHeaderView, QMessageBox, QColorDialog
+from PyQt5.QtWidgets import QCalendarWidget, QTableWidget, QPushButton, QCheckBox
+from PyQt5.QtWidgets import QTableWidgetItem, QHeaderView, QMessageBox, QColorDialog, QFileDialog
 
-from PyQt5.QtCore import QDate, QTimer, QTime, QSize, Qt
-from PyQt5.QtGui import QColor, QIcon, QFont
-from PyQt5.QtMultimedia import QSound
+from PyQt5.QtCore import QDate, QTimer, QTime, QSize
+from PyQt5.QtGui import QColor, QIcon
 
-from ui_files_py import more_statistic_wnd, pay_form, \
-    add_income_client_wnd, about_wnd, main_window, client_info_wnd, change_client_wnd, settings_wnd
+from ui_files_py import more_statistic_wnd, pay_form, add_income_client_wnd, about_wnd, main_window,\
+    client_info_wnd, change_client_wnd, settings_wnd, lesson_timer_wnd
 
 from check_correct_input import convert_number, convert_name, check_correct_time
 from update_data import update_data_in_new_day, update_month_report
@@ -21,11 +21,12 @@ MONTHS = {1: 'Январь', 2: 'Февраль', 3: 'Март', 4: 'Апрел�
           7: 'Июль', 8: 'Август', 9: 'Сентябрь', 10: 'Октябрь', 11: 'Ноябрь', 12: 'Декабрь'}
 DAYS = {'Понедельник': 1, 'Вторник': 2, 'Среда': 3, 'Четверг': 4, 'Пятница': 5,
         'Суббота': 6, 'Воскресенье': 7}
+MAX_SOUND_DURATION_SECONDS = 30
 CONSTANTS = {}
 
 need_show_mes = True
 can_delete_previous_history = False
-lesson_am = 0
+lesson_am = play_time = 0
 delete_char = chr(10_005)
 more_char = chr(128_269)
 
@@ -35,7 +36,52 @@ light_green = QColor('#90FF77')
 light_yellow = QColor('#FFFFE0')
 
 
-class AddLessonWindow(QWidget, add_income_client_wnd.Ui_Form):
+class AddForm(QWidget, add_income_client_wnd.Ui_Form):
+    def __init__(self):
+        super().__init__()
+
+    def initUI(self):
+        self.setupUi(self)
+
+        self.items = [res[0] for res in get_data_from_db(MY_DB, 'clients', 'name')]
+        self.client_cb.addItems(self.items)
+
+        self.items = [res[0] for res in get_data_from_db(MY_DB, 'lesson_types', 'name')]
+        self.lesson_type_cb.addItems(self.items)
+        self.min = get_data_from_db(MY_DB, 'lesson_types', 'duration',
+                                    {'name': [self.items[0]]})[0][0]
+
+        cur_hour = dt.datetime.now().hour
+        end_hours, end_min = calculate_time(cur_hour, 0, self.min)
+
+        self.start_lesson_time_te.setTime(QTime(cur_hour, 0))
+        self.end_lesson_time_te.setTime(QTime(end_hours, end_min))
+
+        self.message = QMessageBox()
+        self.message.setText('Занятие успешно добавлено!')
+
+        self.error_message = QMessageBox()
+
+        self.add_btn.clicked.connect(self.add_note)
+        self.start_lesson_time_te.timeChanged.connect(self.update_end_time)
+        self.lesson_type_cb.currentIndexChanged.connect(self.change_end_time)
+
+    def change_end_time(self):
+        self.min = get_data_from_db(MY_DB, 'lesson_types', 'duration',
+                                    {'name': [self.lesson_type_cb.currentText()]})[0][0]
+        self.update_end_time()
+
+    def update_end_time(self):
+        """ Обновляет время конца занятия, при изменении времени начала """
+
+        time = self.start_lesson_time_te.time()
+        cur_hour, cur_min = time.hour(), time.minute()
+
+        end_hours, end_min = calculate_time(cur_hour, cur_min, self.min)
+        self.end_lesson_time_te.setTime(QTime(end_hours, end_min))
+
+
+class AddLessonWindow(AddForm):
     def __init__(self, parent, table: str, date: (QDate, int), time_intervals: list):
         super().__init__()
         self.initUI()
@@ -46,30 +92,13 @@ class AddLessonWindow(QWidget, add_income_client_wnd.Ui_Form):
         self.all_time_intervals = time_intervals
 
     def initUI(self):
-        self.setupUi(self)
+        super().initUI()
         self.setWindowTitle('Добавить занятие')
 
-        self.client_label.hide()
         self.client_cb.hide()
+        self.client_label.hide()
 
-        self.items = [res[0] for res in get_data_from_db(MY_DB, 'lesson_types', 'name')]
-        self.lesson_type_cb.addItems(self.items)
-
-        cur_hour = dt.datetime.now().hour
-        end_hours, end_min = calculate_time(cur_hour, 0)
-
-        self.start_lesson_time_te.setTime(QTime(cur_hour, 0))
-        self.end_lesson_time_te.setTime(QTime(end_hours, end_min))
-
-        self.message = QMessageBox()
-        self.message.setText('Занятие успешно добавлено!')
-
-        self.error_message = QMessageBox()
-
-        self.add_btn.clicked.connect(self.add_lesson)
-        self.start_lesson_time_te.timeChanged.connect(self.update_end_time)
-
-    def add_lesson(self):
+    def add_note(self):
         if isinstance(self.date, QDate):
             date = f"'{'.'.join(map(str, (self.date.day(), self.date.month(), self.date.year())))}'"
         else:
@@ -100,17 +129,8 @@ class AddLessonWindow(QWidget, add_income_client_wnd.Ui_Form):
 
         self.parent.load_lessons_table()
 
-    def update_end_time(self):
-        """ Обновляет время конца занятия, при изменении времени начала """
 
-        time = self.start_lesson_time_te.time()
-        cur_hour, cur_min = time.hour(), time.minute()
-
-        end_hours, end_min = calculate_time(cur_hour, cur_min)
-        self.end_lesson_time_te.setTime(QTime(end_hours, end_min))
-
-
-class AddIncomeClientWindow(QWidget, add_income_client_wnd.Ui_Form):
+class AddIncomeClientWindow(AddForm):
     def __init__(self, parent, calendar: QCalendarWidget):
         super().__init__()
         self.initUI()
@@ -119,29 +139,9 @@ class AddIncomeClientWindow(QWidget, add_income_client_wnd.Ui_Form):
         self.calendar = calendar
 
     def initUI(self):
-        self.setupUi(self)
+        super().initUI()
 
-        self.items = [res[0] for res in get_data_from_db(MY_DB, 'clients', 'name')]
-        self.client_cb.addItems(self.items)
-
-        self.items = [res[0] for res in get_data_from_db(MY_DB, 'lesson_types', 'name')]
-        self.lesson_type_cb.addItems(self.items)
-
-        cur_hour = dt.datetime.now().hour
-        end_hours, end_min = calculate_time(cur_hour, 0)
-
-        self.error_message = QMessageBox()
-
-        self.start_lesson_time_te.setTime(QTime(cur_hour, 0))
-        self.end_lesson_time_te.setTime(QTime(end_hours, end_min))
-
-        self.message = QMessageBox()
-        self.message.setText('Клиент успешно добавлен!')
-
-        self.add_btn.clicked.connect(self.add_income_client)
-        self.start_lesson_time_te.timeChanged.connect(self.update_end_time)
-
-    def add_income_client(self):
+    def add_note(self):
         date = self.calendar.selectedDate()
         date = f"'{'.'.join(map(str, (date.day(), date.month(), date.year())))}'"
 
@@ -173,15 +173,6 @@ class AddIncomeClientWindow(QWidget, add_income_client_wnd.Ui_Form):
         self.parent.load_income_table()
 
         self.message.show()
-
-    def update_end_time(self):
-        """ Обновляет время конца занятия, при изменении времени начала """
-
-        time = self.start_lesson_time_te.time()
-        cur_hour, cur_min = time.hour(), time.minute()
-
-        end_hours, end_min = calculate_time(cur_hour, cur_min)
-        self.end_lesson_time_te.setTime(QTime(end_hours, end_min))
 
 
 class ChangeClientInfoWindow(QWidget, change_client_wnd.Ui_Form):
@@ -374,7 +365,7 @@ class PayWindow(QWidget, pay_form.Ui_Form):
             self.error_message.show()
             return
 
-        date = dt.date.today()  # self.calendar.selectedDate() ????????????
+        date = dt.date.today()
         date = f"'{'.'.join(map(str, (date.day, date.month, date.year)))}'"
         time = f"'{dt.datetime.now().hour:02d}:{dt.datetime.now().minute:02d}'"
 
@@ -467,19 +458,22 @@ class SettingsWindow(QWidget, settings_wnd.Ui_Form):
         self.load_page2()
         self.load_page3()
 
+        self.select_btn.clicked.connect(self.select_sound)
+        self.standard_btn.clicked.connect(self.set_standard_sound)
         self.add_lesson_btn.clicked.connect(self.show_add_lesson_wnd)
         self.save_btn.clicked.connect(self.saveNewSettings)
 
     def load_page1(self):
-        self.spin_boxes = [self.lesson_price_sb, self.lesson_duration_sb,
-                           self.max_non_active_period_sb, self.abonement_duration_sb]
-        for i, (key, value) in enumerate(list(CONSTANTS.items())[:-4]):
+        self.spin_boxes = [self.lesson_price_sb, self.max_non_active_period_sb,
+                           self.abonement_duration_sb]
+        for i, (key, value) in enumerate(list(CONSTANTS.items())[:-5]):
             self.spin_boxes[i].setValue(int(value))
 
-        print(CONSTANTS)
         self.line_edits = [self.org_name_le, self.org_slogan_le]
-        for i, (key, value) in enumerate(list(CONSTANTS.items())[-4:-2]):
+        for i, (key, value) in enumerate(list(CONSTANTS.items())[-5:-3]):
             self.line_edits[i].setText(value)
+        self.sound_file = CONSTANTS['sound']
+        self.sound_label.setText(self.sound_file.split('/')[-1])
 
         self.hide_zero_rows_chb.setCheckState(int(CONSTANTS['hide_zero_rows_in_statistic']) * 2)
         self.can_delete_chb.setCheckState(int(not can_delete_previous_history) * 2)
@@ -536,13 +530,13 @@ class SettingsWindow(QWidget, settings_wnd.Ui_Form):
             for j in range(len(info[0]) - 1):
                 self.lesson_types_table.setItem(i, j, QTableWidgetItem(str(info[i][j])))
 
-            self.add_buttons_in_row(i, info[i][2])
+            self.add_buttons_in_row(i, info[i][3])
 
         btn = QPushButton(self)
         btn.setIcon(QIcon('images/plus.png'))
         btn.setIconSize(QSize(28, 28))
         btn.clicked.connect(self.add_row)
-        self.lesson_types_table.setCellWidget(self.lesson_types_table.rowCount() - 1, 3, btn)
+        self.lesson_types_table.setCellWidget(self.lesson_types_table.rowCount() - 1, 4, btn)
 
     def show_add_lesson_wnd(self):
         self.add_lesson_window = AddLessonWindow(self, 'lessons_timetable',
@@ -553,19 +547,29 @@ class SettingsWindow(QWidget, settings_wnd.Ui_Form):
         for radio_btn in self.days:
             if radio_btn.isChecked():
                 return radio_btn.text()
-    
+
+    def get_lesson_types_info(self):
+        info = []
+        table = self.lesson_types_table
+
+        for i in range(self.lesson_types_table.rowCount() - 1):
+            info.append([f'"{table.item(i, j).text()}"' for j in range(table.columnCount() - 1)])
+            info[i][3] = f'"{self.color_btn[i].palette().button().color().name()}"'
+
+        return info
+
     def add_buttons_in_row(self, row, color):
         btn = QPushButton('Выбрать цвет', self)
         btn.setStyleSheet(f'background-color: {color}')
         btn.clicked.connect(self.choose_color)
         self.color_btn.append(btn)
-        self.lesson_types_table.setCellWidget(row, 2, btn)
-        self.lesson_types_table.setItem(row, 2, QTableWidgetItem(""))
+        self.lesson_types_table.setCellWidget(row, 3, btn)
+        self.lesson_types_table.setItem(row, 3, QTableWidgetItem(""))
 
         btn = QPushButton(delete_char, self)
         btn.clicked.connect(lambda x: self.delete_row(self.lesson_types_table, self.delete_type_btn))
         self.delete_type_btn.append(btn)
-        self.lesson_types_table.setCellWidget(row, 3, btn)
+        self.lesson_types_table.setCellWidget(row, 4, btn)
 
     def add_row(self):
         global lesson_am
@@ -574,6 +578,7 @@ class SettingsWindow(QWidget, settings_wnd.Ui_Form):
         self.lesson_types_table.insertRow(rows := self.lesson_types_table.rowCount() - 1)
         self.lesson_types_table.setItem(rows, 0, QTableWidgetItem(str(rows + 1)))
         self.lesson_types_table.setItem(rows, 1, QTableWidgetItem('Занятие' + str(lesson_am)))
+        self.lesson_types_table.setItem(rows, 2, QTableWidgetItem('0'))
         self.add_buttons_in_row(self.lesson_types_table.rowCount() - 2, 'white')
 
     def choose_color(self):
@@ -582,21 +587,23 @@ class SettingsWindow(QWidget, settings_wnd.Ui_Form):
             self.sender().setStyleSheet(f'background-color: {color.name()}')
             print(color.name())
 
+    def select_sound(self):
+        formats = '*.au *.mp2 *.mp3 *.ogg *.vorbis *.wav *.wma'
+        file_name, is_ok = QFileDialog.getOpenFileName(self, 'Выбрать файл', 'sounds',
+                                                       f'Звук ({formats})')
+        if is_ok:
+            self.sound_file = file_name
+            self.sound_label.setText(file_name.split('/')[-1])
+
+    def set_standard_sound(self):
+        self.sound_file = 'sound/end_sound.wav'
+        self.sound_label.setText('end_sound.wav')
+
     def delete_row(self, table: QTableWidget, array_buttons: (list, tuple), need_delete_in_db=False):
         array_buttons.pop(row := array_buttons.index(self.sender()))
         if need_delete_in_db:
             delete_data_from_db(MY_DB, 'lessons_timetable', {'id': [table.item(row, 0).text()]})
         table.removeRow(row)
-
-    def get_lesson_types_info(self):
-        info = []
-        table = self.lesson_types_table
-
-        for i in range(self.lesson_types_table.rowCount() - 1):
-            info.append([f'"{table.item(i, j).text()}"' for j in range(table.columnCount() - 1)])
-            info[i][2] = f'"{self.color_btn[i].palette().button().color().name()}"'
-
-        return info
 
     def saveNewSettings(self):
         global can_delete_previous_history
@@ -604,7 +611,7 @@ class SettingsWindow(QWidget, settings_wnd.Ui_Form):
         can_delete_previous_history = not self.can_delete_chb.isChecked()
 
         values = ([f"'{param.text()}'" for param in self.spin_boxes + self.line_edits] +
-                  [str(int(self.hide_zero_rows_chb.isChecked()))])
+                  [f"'{self.sound_file}'", int(self.hide_zero_rows_chb.isChecked())])
         for i, value in enumerate(values, 1):
             update_data_in_db(MY_DB, 'settings', {'value': value}, {'id': i})
 
@@ -612,7 +619,7 @@ class SettingsWindow(QWidget, settings_wnd.Ui_Form):
 
         delete_data_from_db(MY_DB, 'lesson_types', {})
         for row in self.get_lesson_types_info():
-            add_data_to_db(MY_DB, 'lesson_types', ('id', 'name', 'color'), row)
+            add_data_to_db(MY_DB, 'lesson_types', ('id', 'name', 'duration', 'color'), row)
         ids = [str(res[0]) for res in get_data_from_db(MY_DB, 'lesson_types', 'id')]
         delete_data_from_db(MY_DB, 'lessons', {'lesson_type_id': ids}, True)
         delete_data_from_db(MY_DB, 'lessons_timetable', {'lesson_type_id': ids}, True)
@@ -626,49 +633,74 @@ class SettingsWindow(QWidget, settings_wnd.Ui_Form):
         self.parent.load_month_report_table()
 
 
-class LessonTimeWindow(QWidget):
+class LessonTimeWindow(QWidget, lesson_timer_wnd.Ui_Form):
     def __init__(self):
         super().__init__()
         self.initUI()
 
     def initUI(self):
-        self.setWindowTitle('Время занятия')
-        self.setFixedSize(800, 600)
+        self.setupUi(self)
 
-        self.time_left = dt.timedelta(minutes=int(CONSTANTS['lesson_duration']))
-        self.sound = QSound('sounds/end_sound.wav')
-        self.pause = False
+        self.items = [res[0] for res in get_data_from_db(MY_DB, 'lesson_types', 'name')]
+        self.lesson_types.addItems(self.items)
+        self.lesson_types.currentTextChanged.connect(self.set_time)
 
-        self.time = QLabel(self.time_left.__str__(), self)
-        self.time.setFixedSize(800, 400)
-        self.time.setFont(QFont('Times', 108))
-        self.time.setAlignment(Qt.AlignCenter)
-        self.time.move(0, 75)
-
-        self.stop_btn = QPushButton('Стоп', self)
-        self.stop_btn.setFixedSize(200, 100)
-        self.stop_btn.setFont(QFont('Times', 48))
-        self.stop_btn.move(300, 475)
-        self.stop_btn.clicked.connect(self.switch_pause)
+        self.set_current_type()
+        self.set_time()
+        self.sound = pyglet.media.load(CONSTANTS['sound'])
+        self.pause = True
 
         self.timer = QTimer(self)
         self.timer.setInterval(1000)
         self.timer.timeout.connect(self.set_new_time)
-        self.timer.start()
+
+        self.stop_btn.clicked.connect(self.switch_pause)
+
+    def set_current_type(self):
+        cur_date = dt.datetime.now()
+
+        date = '.'.join(map(str, (cur_date.day, cur_date.month, cur_date.year)))
+        time = dt.time(hour=cur_date.hour, minute=cur_date.minute)
+
+        lessons = get_data_from_db(MY_DB, 'lessons', 'lesson_type_id, time', {'date': [date]})
+        lesson_type_index = self.get_suitable_lesson_type(lessons, time)
+
+        self.lesson_types.setCurrentIndex(lesson_type_index if lesson_type_index != -1 else 0)
+
+    def set_time(self):
+        minutes = get_data_from_db(MY_DB, 'lesson_types', 'duration',
+                                   {'name': [self.lesson_types.currentText()]})[0][0]
+        self.time_left = dt.timedelta(minutes=minutes)
+        self.time.setText(self.time_left.__str__())
 
     def set_new_time(self):
+        if self.time_left.total_seconds() <= 0:
+            self.timer.stop()
+            self.stop_btn.setEnabled(False)
+            play_sound(self.sound)
+            return
+
         self.time_left -= dt.timedelta(seconds=1)
         self.time.setText(self.time_left.__str__())
 
-        if self.time_left.total_seconds() == 0:
-            self.timer.stop()
-            self.sound.play()
-            self.stop_btn.setEnabled(False)
+    def get_suitable_lesson_type(self, lessons: (list, tuple), time: dt.time):
+        for l_id, l_time in lessons:
+            start, end = map(lambda x: dt.time(*map(int, x.split(':'))), l_time.split('-'))
+
+            if start <= time <= end:
+                lesson = get_data_from_db(MY_DB, 'lesson_types', 'name', {'id': [str(l_id)]})[0][0]
+                return self.items.index(lesson)
+
+        return -1
 
     def switch_pause(self):
         self.pause = not self.pause
+        self.lesson_types.setEnabled(self.pause)
         self.stop_btn.setText('Старт' if self.pause else 'Стоп')
         self.timer.stop() if self.pause else self.timer.start()
+
+    def closeEvent(self, a0) -> None:
+        self.timer.stop()
 
 
 class AboutWindow(QWidget, about_wnd.Ui_Form):
@@ -738,7 +770,6 @@ class MainWindow(QMainWindow, main_window.Ui_MainWindow):
             self.change_client_wnd = ChangeClientInfoWindow(self, (name, phone))
             self.change_client_wnd.show()
         except AttributeError:
-            print(self.client_base_table.currentItem())
             self.message.setText('Ячейка не выбрана')
             self.message.show()
 
@@ -847,7 +878,6 @@ class MainWindow(QMainWindow, main_window.Ui_MainWindow):
         table_id = [str(el[0]) for el in id__time__client_id]
         times = [str(el[1]) for el in id__time__client_id]
         clients_id = [str(el[2]) for el in id__time__client_id]
-        print(table_id, clients_id)
         info = []
         for i, c_id in enumerate(clients_id):
             name = get_data_from_db(MY_DB, 'clients', 'name', {'id': [c_id]})[0][0]
@@ -1053,6 +1083,8 @@ class MainWindow(QMainWindow, main_window.Ui_MainWindow):
         date = f'"{date.day}.{date.month}.{date.year}"'
         update_data_in_db(MY_DB, 'settings', {'value': date}, {'param': 'last_activity_date'})
 
+        sys.exit()
+
 
 def paintRow(table: QTableWidget, row: int, color: QColor):
     for col in range(table.columnCount()):
@@ -1064,11 +1096,11 @@ def calculate_age(born: dt.date) -> str:
     return str(today.year - born.year - ((today.month, today.day) < (born.month, born.day)))
 
 
-def calculate_time(cur_hour: int, cur_min: int):
+def calculate_time(cur_hour: int, cur_min: int, minutes: int):
     """ Подсчет время конца действия, учитывая начальное время и длительность действия """
 
     end_sec = (dt.timedelta(hours=cur_hour, minutes=cur_min) +
-               dt.timedelta(minutes=int(CONSTANTS["lesson_duration"]))).seconds
+               dt.timedelta(minutes=minutes)).seconds
     end_hours = end_sec // 3600
     end_min = (end_sec // 60) % 60
 
@@ -1091,6 +1123,26 @@ def beauty_number(number: (int, str)) -> str:
 def update_constants():
     global CONSTANTS
     CONSTANTS = dict(get_data_from_db(MY_DB, 'settings', 'param, value'))
+
+
+def update_app(playlist: pyglet.media):
+    global play_time
+    play_time += 0.5
+
+    if not playlist.playing or play_time > MAX_SOUND_DURATION_SECONDS:
+        play_time = 0
+        playlist.pause()
+        pyglet.clock.unschedule(update_app)
+        pyglet.app.exit()
+
+
+def play_sound(sound):
+    player = pyglet.media.Player()
+    player.queue(sound)
+    player.play()
+
+    pyglet.clock.schedule_interval(lambda x: update_app(player), 0.5)
+    pyglet.app.run()
 
 
 def except_hook(cls, exception, traceback):

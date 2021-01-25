@@ -689,8 +689,15 @@
     </property>
     <addaction name="preferences_action"/>
    </widget>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>Файл</string>
+    </property>
+    <addaction name="actionopen"/>
+   </widget>
    <addaction name="help_menu"/>
    <addaction name="settings_menu"/>
+   <addaction name="menu"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="about_action">
@@ -701,6 +708,11 @@
   <action name="preferences_action">
    <property name="text">
     <string>Preferences...</string>
+   </property>
+  </action>
+  <action name="actionopen">
+   <property name="text">
+    <string>open</string>
    </property>
   </action>
  </widget>
