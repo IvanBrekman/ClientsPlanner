@@ -37,7 +37,7 @@ def update_data_in_db(db: str, table: str, update_data: dict, conditions: dict) 
     request = f"""UPDATE {table} SET """
     for column, value in update_data.items():
         request += f"{column} = {value}, "
-    request = request[:-2] + " WHERE "
+    request = request[:-2] + (" WHERE " if conditions else "")
 
     for column, value in conditions.items():
         request += f"{column} = '{value}' AND "
@@ -126,3 +126,7 @@ def get_data_from_db(db: str, table: str, columns: str,
 if __name__ == '__main__':
     print(*get_data_from_db('clients.db', 'clients', '*', conditions_like={'name': '%уко%'},
                             ordering={'name': 0}), sep='\n')
+    dates = get_data_from_db('clients.db', 'payments_table', 'id, date')
+
+    for cl_id, date in dates:
+        update_data_in_db('clients.db', 'payments_table', {'date': f"'{'.'.join(map(lambda x: x.rjust(2, '0'), date.split('.')[::-1]))}'"}, {'id': cl_id})

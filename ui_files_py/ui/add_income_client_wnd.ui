@@ -40,9 +40,6 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="1">
-      <widget class="QTimeEdit" name="start_lesson_time_te"/>
-     </item>
      <item row="3" column="0">
       <widget class="QLabel" name="label_3">
        <property name="text">
@@ -60,8 +57,22 @@
        </property>
       </widget>
      </item>
+     <item row="1" column="1">
+      <widget class="QLineEdit" name="start_lesson_time_le">
+       <property name="inputMask">
+        <string>00:00</string>
+       </property>
+      </widget>
+     </item>
      <item row="2" column="1">
-      <widget class="QTimeEdit" name="end_lesson_time_te"/>
+      <widget class="QLineEdit" name="end_lesson_time_le">
+       <property name="inputMask">
+        <string>00:00</string>
+       </property>
+       <property name="text">
+        <string>:</string>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
