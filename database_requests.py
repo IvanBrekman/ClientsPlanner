@@ -55,7 +55,7 @@ def delete_data_from_db(db: str, table: str, conditions: dict, not_fl=False) -> 
     """
     :param db: Используемая база данных
     :param table: Таблица, в которой удаляются значения
-    :param conditions: Словарь условий удаления строк вида: <Ключ> = <Значение>
+    :param conditions: Словарь условий удаления строк вида: <Ключ> IN <Значение>
     :param not_fl: Флажок, обозначающий нужно ли добавлять NOT перед условиями сравнения
     :return: None
     """
@@ -66,7 +66,8 @@ def delete_data_from_db(db: str, table: str, conditions: dict, not_fl=False) -> 
     request = f"""DELETE FROM {table}{' WHERE ' if conditions else ''}"""
 
     for column, value in conditions.items():
-        request += f"""{column} {'NOT' if not_fl else ''} IN ('{"', '".join(value)}') AND """
+        request += f"""{column}{' NOT' if not_fl else ''} IN ('{"', '".join(value)}') AND """
+    if conditions:
         request = request[:-5]
 
     print(request)

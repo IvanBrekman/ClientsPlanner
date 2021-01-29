@@ -10,7 +10,7 @@ from PyQt5.QtCore import QDate, QTimer, QSize, QRegExp, Qt
 from PyQt5.QtGui import QColor, QIcon, QRegExpValidator
 
 from ui_files_py import more_statistic_wnd, pay_form, add_income_client_wnd, about_wnd, main_window,\
-    client_info_wnd, change_client_wnd, settings_wnd, lesson_timer_wnd
+    client_info_wnd, change_client_wnd, settings_wnd, lesson_timer_wnd, select_date_wnd
 
 from check_correct_input import convert_number, convert_name, check_correct_time
 from update_data import update_data_in_new_day, update_month_report
@@ -205,7 +205,7 @@ class ChangeClientInfoWindow(QWidget, change_client_wnd.Ui_Form):
 
         self.message = QMessageBox()
 
-        reg = QRegExp("[0-9]{11}")
+        reg = QRegExp("\\+?[0-9]{11}")
         validator = QRegExpValidator(reg, self)
         self.phone_edit.setValidator(validator)
 
@@ -224,7 +224,34 @@ class ChangeClientInfoWindow(QWidget, change_client_wnd.Ui_Form):
             self.change_client(False)
 
         self.client_cb.currentTextChanged.connect(self.change_client)
+        self.reg_date_le.textChanged.connect(self.check_date)
+        self.birth_date_le.textChanged.connect(self.check_date)
+        self.select_reg_date_btn.clicked.connect(self.choose_date)
+        self.select_born_date_btn.clicked.connect(self.choose_date)
         self.save_changes_btn.clicked.connect(self.save_new_info)
+
+    def choose_date(self):
+        par = self.reg_date_le if self.sender() == self.select_reg_date_btn else self.birth_date_le
+        values = par.text()
+        date = QDate(*map(int, values.split('.'))) if len(values) == 10 else QDate.currentDate()
+
+        self.choose_date_wnd = ChooseDateWindow(par, date)
+        self.choose_date_wnd.show()
+
+    def check_date(self):
+        first_part, second_part, third_part = self.sender().text().split('.')
+        if len(first_part) == 4:
+            first_part = str(min(int(first_part), 2350))
+        if len(second_part) == 2:
+            second_part = str(min(int(second_part), 12)).rjust(2, '0')
+        if len(third_part) == 2:
+            third_part = str(min(int(third_part), 31)).rjust(2, '0')
+
+        date = first_part + '.' + second_part + '.' + third_part
+
+        pos = self.sender().cursorPosition()
+        self.sender().setText(date)
+        self.sender().setCursorPosition(pos)
 
     def change_client(self, is_change_item=True):
         """ Обновление информации при смене клиента """
@@ -254,14 +281,19 @@ class ChangeClientInfoWindow(QWidget, change_client_wnd.Ui_Form):
         error = []
         if name[1:].strip().startswith("Неверный"):
             error.append(name)
-        elif phone[1] != '+':
+        if phone[1] != '+':
             error.append(phone)
+        if len(reg_date) != 12 or QDate(*map(int, reg_date[1:-1].split('.'))).year() == 0:
+            error.append('Неверная дата регистрации')
+        if len(birth_date) != 12 or QDate(*map(int, birth_date[1:-1].split('.'))).year() == 0:
+            error.append('Неверная дата рождения')
 
         if error:
             self.message.setText('\n'.join(error))
             self.message.show()
             return
 
+        print()
         cl = ('name', 'phone', 'start_date', 'birth_date',
               'lessons_amount', 'duration', 'is_active', 'non_active_days')
         values = (name, phone, reg_date, birth_date, les_amount, dur, '1', '0')
@@ -276,10 +308,33 @@ class ChangeClientInfoWindow(QWidget, change_client_wnd.Ui_Form):
         self.destroy()
 
 
-class ClientInfoWindow(QWidget, client_info_wnd.Ui_Form):
-    def __init__(self, client_name):
+class ChooseDateWindow(QWidget, select_date_wnd.Ui_Form):
+    def __init__(self, parent_widget, date: QDate, slot=None):
         super().__init__()
 
+        self.date = date
+        self.slot = slot
+        self.parent_widget = parent_widget
+
+        self.initUI()
+
+    def initUI(self):
+        self.setupUi(self)
+        self.calendar.setSelectedDate(self.date)
+        self.select_btn.clicked.connect(self.save_data)
+
+    def save_data(self):
+        self.parent_widget.setText(self.calendar.selectedDate().toString('yyyy.MM.dd'))
+        if self.slot is not None:
+            self.slot()
+        self.destroy()
+
+
+class ClientInfoWindow(QWidget, client_info_wnd.Ui_Form):
+    def __init__(self, parent, client_name):
+        super().__init__()
+
+        self.parent = parent
         self.client_name = client_name
         self.initUI()
 
@@ -293,16 +348,18 @@ class ClientInfoWindow(QWidget, client_info_wnd.Ui_Form):
         self.client_info_table.horizontalHeader().setSectionResizeMode(3, QHeaderView.Stretch)
         self.client_info_table.horizontalHeader().resizeSections(QHeaderView.ResizeToContents)
 
-        self.date_filter_de.dateChanged.connect(self.update_table)
+        self.date_filter_le.editingFinished.connect(self.update_table)
+        self.date_filter_le.textChanged.connect(self.check_date)
+        self.select_btn.clicked.connect(self.choose_date)
         self.exit_btn.clicked.connect(self.exit)
 
     def load_table(self, attendance=None, payments=None):
         if attendance is None and payments is None:
-            client_id = str(get_data_from_db(MY_DB, 'clients', 'id',
-                                             {'name': [self.client_name]})[0][0])
+            self.cl_id = str(get_data_from_db(MY_DB, 'clients', 'id',
+                                                  {'name': [self.client_name]})[0][0])
             attendance = get_data_from_db(MY_DB, 'clients_attendance', '*',
-                                          {'client_id': [client_id]})
-            payments = get_data_from_db(MY_DB, 'payments_table', '*', {'client_id': [client_id]})
+                                          {'client_id': [self.cl_id]})
+            payments = get_data_from_db(MY_DB, 'payments_table', '*', {'client_id': [self.cl_id]})
 
         if not (attendance or payments):
             self.client_info_table.setRowCount(0)
@@ -317,26 +374,40 @@ class ClientInfoWindow(QWidget, client_info_wnd.Ui_Form):
                                             *map(int, x[1].split('-')[0].split(':'))))
         print(*info, sep='\n')
 
+        self.delete_btn = []
         self.client_info_table.setRowCount(0)
         for i in range(len(info)):
+            j = 0
             self.client_info_table.setRowCount(self.client_info_table.rowCount() + 1)
             self.client_info_table.setItem(i, 0,
                                            QTableWidgetItem('Оплата' if info[i][-1] else 'Занятие'))
-            for j in range(len(info[0])):
-                self.client_info_table.setItem(i, j + 1, QTableWidgetItem(str(info[i][j])))
+            for j in range(len(info[i]) + 1):
+                item = str(info[i][j]) if j < len(info[i]) else ""
+                self.client_info_table.setItem(i, j + 1, QTableWidgetItem(item))
                 self.client_info_table.item(i, j + 1).setFlags(Qt.ItemIsEditable)
                 self.client_info_table.item(i, j + 1).setForeground(QColor('black'))
+
+            btn = QPushButton(delete_char, self)
+            btn.clicked.connect(self.delete_note)
+            self.delete_btn.append(btn)
+            self.client_info_table.setCellWidget(i, j + 1, btn)
+
             paintRow(self.client_info_table, i, light_green if bool(info[i][-1]) else light_yellow)
 
     def update_table(self):
         """ Обновление таблицы в соответствии с новой датой """
 
-        client_id = str(get_data_from_db(MY_DB, 'clients', 'id', {'name': [self.client_name]})[0][0])
-        print(client_id)
-        date = self.date_filter_de.date()
+        try:
+            date = QDate(*map(int, self.date_filter_le.text().split('.')))
+            if date.year() == 0:
+                raise ValueError
+        except ValueError:
+            date = QDate(2020, 11, 1)
+            self.date_filter_le.setText("2020.11.01")
+        print(date)
 
-        atd = get_data_from_db(MY_DB, 'clients_attendance', '*', {'client_id': [client_id]})
-        pmt = get_data_from_db(MY_DB, 'payments_table', '*', {'client_id': [client_id]})
+        atd = get_data_from_db(MY_DB, 'clients_attendance', '*', {'client_id': [self.cl_id]})
+        pmt = get_data_from_db(MY_DB, 'payments_table', '*', {'client_id': [self.cl_id]})
 
         attendance = list(filter(lambda x: dt.date(*map(int, x[1].split('.'))) >= date, atd))
         payments = list(filter(lambda x: dt.date(*map(int, x[1].split('.'))) >= date, pmt))
@@ -345,6 +416,53 @@ class ClientInfoWindow(QWidget, client_info_wnd.Ui_Form):
             print('update_table')
             print(*(attendance + payments))
             self.load_table(attendance, payments)
+
+    def choose_date(self):
+        values = self.date_filter_le.text()
+        date = QDate(*map(int, values.split('.'))) if len(values) == 10 else QDate.currentDate()
+
+        self.choose_date_wnd = ChooseDateWindow(self.date_filter_le, date, self.update_table)
+        self.choose_date_wnd.show()
+
+    def check_date(self):
+        first_part, second_part, third_part = self.sender().text().split('.')
+        if len(first_part) == 4:
+            first_part = str(min(int(first_part), 2350))
+        if len(second_part) == 2:
+            second_part = str(min(int(second_part), 12)).rjust(2, '0')
+        if len(third_part) == 2:
+            third_part = str(min(int(third_part), 31)).rjust(2, '0')
+
+        date = first_part + '.' + second_part + '.' + third_part
+
+        pos = self.sender().cursorPosition()
+        self.sender().setText(date)
+        self.sender().setCursorPosition(pos)
+
+    def delete_note(self):
+        row = self.delete_btn.index(self.sender())
+        get_item = lambda col: self.client_info_table.item(row, col).text()
+
+        if get_item(0) == 'Оплата':
+            table = 'payments_table'
+            columns = ('date', 'time', 'pay_sum', 'lesson_amount')
+            update_data_in_db(MY_DB, 'clients', {'lessons_amount': f'lessons_amount -{get_item(4)}'},
+                              {'id': self.cl_id})
+        else:
+            table = 'clients_attendance'
+            columns = ('date', 'time')
+            update_data_in_db(MY_DB, 'clients', {'lessons_amount': f'lessons_amount + 1'},
+                              {'id': self.cl_id})
+        cond = {columns[i - 1]: [get_item(i)] for i in range(1, 5 if get_item(0) == 'Оплата' else 3)}
+        cond['client_id'] = [self.cl_id]
+
+        delete_data_from_db(MY_DB, table, cond)
+        self.client_info_table.removeRow(row)
+        self.delete_btn.pop(row)
+
+        self.parent.load_month_report_table()
+        self.parent.update_planner_tab_tables()
+        self.parent.load_client_table()
 
     def exit(self):
         self.destroy()
@@ -428,7 +546,7 @@ class MoreStatisticWindow(QWidget, more_statistic_wnd.Ui_Form):
     def initUI(self):
         self.setupUi(self)
 
-        self.data_label.setText(f'{MONTHS[self.month]} {self.year}')
+        self.data_label.setText(f'{MONTHS[int(self.month)]} {self.year}')
 
         self.load_table(self.attendance_table, 'clients_attendance')
         self.load_table(self.payments_table, 'payments_table')
@@ -691,7 +809,7 @@ class LessonTimeWindow(QWidget, lesson_timer_wnd.Ui_Form):
     def set_current_type(self):
         cur_date = dt.datetime.now()
 
-        date = f"'{cur_date.strftime('%Y.%m.%d')}'"
+        date = cur_date.strftime('%Y.%m.%d')
         time = dt.time(hour=cur_date.hour, minute=cur_date.minute)
 
         lessons = get_data_from_db(MY_DB, 'lessons', 'lesson_type_id, time', {'date': [date]})
@@ -840,7 +958,7 @@ class MainWindow(QMainWindow, main_window.Ui_MainWindow):
 
     def show_client_info(self):
         full_name = self.full_names[self.clients_buttons.index(self.sender())]
-        self.client_info_wnd = ClientInfoWindow(full_name)
+        self.client_info_wnd = ClientInfoWindow(self, full_name)
         self.client_info_wnd.show()
 
     def show_more_statistic(self):

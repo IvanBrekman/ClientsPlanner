@@ -96,7 +96,7 @@ def convert_name(name: str) -> str:
     try:
         if len(name) == 0 or len(name.split(' ')) < 2:
             raise NameFormatError
-        if not all(sym.isalpha() for sym in name.replace(' ', '')):  # Добавить ограничение на Кириллицу
+        if not all(sym.isalpha() for sym in name.replace(' ', '')):
             raise DigitInNameError
 
         name = ' '.join(map(str.capitalize, name.split()))
