@@ -116,7 +116,7 @@ class AddForm(QWidget, add_income_client_wnd.Ui_Form):
 
 
 class AddLessonWindow(AddForm):
-    """ Класс-наслденик для добавления нового занятия в расписание """
+    """ Класс-наследник для добавления нового занятия в расписание """
 
     def __init__(self, parent, table: str, date: (QDate, int), time_intervals: list):
         super().__init__()
@@ -180,7 +180,7 @@ class AddLessonWindow(AddForm):
 
 
 class AddIncomeClientWindow(AddForm):
-    """ Класс-наслденик для добавления клиента, посетившего занятие """
+    """ Класс-наследник для добавления клиента, посетившего занятие """
 
     def __init__(self, parent, calendar: QCalendarWidget):
         super().__init__()
@@ -252,7 +252,7 @@ class ChangeClientInfoWindow(QWidget, change_client_wnd.Ui_Form):
 
         self.message = QMessageBox()
 
-        # Устанавливаем валидатор на номер телефона
+        # Устанавливаем Validator на номер телефона
         reg = QRegExp("\\+?[0-9]{11}")
         validator = QRegExpValidator(reg, self)
         self.phone_edit.setValidator(validator)
@@ -346,7 +346,7 @@ class ChangeClientInfoWindow(QWidget, change_client_wnd.Ui_Form):
     def save_new_info(self):
         """ Сохранение измененной информации """
 
-        # Приведение данных к форматц хранения в бд
+        # Приведение данных к формату хранения в бд
         name = f"'{convert_name(self.name_edit.text())}'"
         phone = f"'{convert_number(self.phone_edit.text())}'"
         reg_date, birth_date = f"'{self.reg_date_le.text()}'", f"'{self.birth_date_le.text()}'"
@@ -370,7 +370,7 @@ class ChangeClientInfoWindow(QWidget, change_client_wnd.Ui_Form):
             return
         #
 
-        # Сохранние информации в базу данных
+        # Сохранение информации в базу данных
         print()
         cl = ('name', 'phone', 'start_date', 'birth_date',
               'lessons_amount', 'duration', 'is_active', 'non_active_days')
@@ -406,7 +406,7 @@ class ChooseDateWindow(QWidget, select_date_wnd.Ui_Form):
         self.select_btn.clicked.connect(self.save_data)
 
     def save_data(self):
-        """ Метод сохраняет выбранную дату в родительском виджете """
+        """ Метод сохраняет выбранную дату в родительском Widget """
 
         self.parent_widget.setText(self.calendar.selectedDate().toString('yyyy.MM.dd'))
         if self.slot is not None:
@@ -509,7 +509,7 @@ class ClientInfoWindow(QWidget, client_info_wnd.Ui_Form):
             self.date_filter_le.setText(DEFAULT_DATE.strftime('%Y.%m.%d'))
         print(date)
 
-        # Обновление информации в соответсвие с новой датой
+        # Обновление информации в соответствие с новой датой
         atd = get_data_from_db(MY_DB, 'clients_attendance', '*', {'client_id': [self.cl_id]})
         pmt = get_data_from_db(MY_DB, 'payments_table', '*', {'client_id': [self.cl_id]})
 
@@ -555,7 +555,7 @@ class ClientInfoWindow(QWidget, client_info_wnd.Ui_Form):
         #
 
     def delete_note(self):
-        """ Метод удалет строку из таблицы """
+        """ Метод удаляет строку из таблицы """
 
         row = self.delete_btn.index(self.sender())
         get_item = lambda col: self.client_info_table.item(row, col).text()
@@ -817,7 +817,7 @@ class SettingsWindow(QWidget, settings_wnd.Ui_Form):
                 self.lessons_table.item(i, j).setFlags(Qt.ItemIsEditable)
                 self.lessons_table.item(i, j).setForeground(QColor('black'))
 
-            btn = QPushButton(delete_char, self)  # Добавление кнопкм для удаления занятия
+            btn = QPushButton(delete_char, self)  # Добавление кнопки для удаления занятия
             btn.clicked.connect(lambda y: self.delete_row(self.lessons_table, self.del_lesson_btn,
                                                           True))
             self.del_lesson_btn.append(btn)
@@ -1040,8 +1040,8 @@ class LessonTimeWindow(QWidget, lesson_timer_wnd.Ui_Form):
         lessons = get_data_from_db(MY_DB, 'lessons', 'lesson_type_id, time', {'date': [date]})
         lesson_type_index = self.get_suitable_lesson_type(lessons, time)
 
-        # Устанавливает тип текущего занятия (если в настоящее время есть заняти в расписании,
-        # иначе 1 занятие из списка доступных
+        # Устанавливает тип текущего занятия (если в настоящее время есть занятие в расписании,
+        # иначе 1 занятие из списка доступных)
         self.lesson_types.setCurrentIndex(lesson_type_index if lesson_type_index != -1 else 0)
 
     def set_time(self):
@@ -1254,7 +1254,7 @@ class MainWindow(QMainWindow, main_window.Ui_MainWindow):
                     checkbox.setChecked(bool(info[i][j]))
                     checkbox.setText(str(info[i][j + 1]) if not info[i][j] else '')
 
-                    # Если период неактивности превышает норму, уведомляем пользователя
+                    # Если период не активности превышает норму, уведомляем пользователя
                     if info[i][j + 1] >= int(CONSTANTS['max_non_active_period']) and need_show_mes:
                         need_show_mes = False
 
@@ -1288,7 +1288,7 @@ class MainWindow(QMainWindow, main_window.Ui_MainWindow):
         #
 
     def load_income_table(self):
-        """ Загрущка таблицы клиентов, посетивших занятие """
+        """ Загрузка таблицы клиентов, посетивших занятие """
 
         self.clients_delete_buttons = []
 
@@ -1382,7 +1382,7 @@ class MainWindow(QMainWindow, main_window.Ui_MainWindow):
 
         self.more_statistic_buttons = []
 
-        # Подготовка данныз для таблицы
+        # Подготовка данных для таблицы
         year = self.year_cb.currentText()
         info = get_data_from_db(MY_DB, 'month_reports', 'month, clients_amount, total_sum',
                                 {'year': [year]}, ordering={'month': 0})
@@ -1446,7 +1446,7 @@ class MainWindow(QMainWindow, main_window.Ui_MainWindow):
     def delete_row_from_lessons_table(self):
         """ Метод удаляет строку из таблицы занятий """
 
-        # Удаение из таблицы
+        # Удаление из таблицы
         delete_row = self.lessons_delete_buttons.index(self.sender())
         deleted_id = self.lessons_table.item(delete_row, 0).text()
         print(delete_row, deleted_id)
@@ -1510,7 +1510,7 @@ class MainWindow(QMainWindow, main_window.Ui_MainWindow):
         self.ordering_index = index
         #
 
-        self.load_client_table(sorted_info)  # Загрузка таблицы клиентовс отсортированными данными
+        self.load_client_table(sorted_info)  # Загрузка таблицы клиентов с отсортированными данными
 
     def search_by_name(self):
         """ Метод осуществляет поиск по ФИО клиентов (чувствителен к регистру) """
@@ -1542,7 +1542,7 @@ class MainWindow(QMainWindow, main_window.Ui_MainWindow):
             text = f'Вы действительно хотите вернуть активность этого клиента?'
             valid = QMessageBox.question(self, '', text, QMessageBox.Yes, QMessageBox.No)
 
-            if valid == QMessageBox.No:  # Если дейтсвие не подтверждено сбрасываем checkbox
+            if valid == QMessageBox.No:  # Если действие не подтверждено сбрасываем checkbox
                 self.load_client_table()
                 return
 
@@ -1650,7 +1650,7 @@ def play_sound(sound):
     player.queue(sound)
     player.play()
 
-    # Устанавка обновления app для файла #
+    # Установка обновления app для файла #
     pyglet.clock.schedule_interval(lambda el: update_app(player), 0.5)
     pyglet.app.run()
 
