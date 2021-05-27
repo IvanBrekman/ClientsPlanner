@@ -1,5 +1,9 @@
 import sqlite3
 
+"""
+        Данный модуль реализует функции для генерации запросов к базе данных
+"""
+
 
 def add_data_to_db(db: str, table: str, columns: (list, tuple), values: (list, tuple)) -> None:
     """
@@ -34,6 +38,7 @@ def update_data_in_db(db: str, table: str, update_data: dict, conditions: dict) 
     con = sqlite3.connect(db)
     cur = con.cursor()
 
+    # Создание запроса, основываясь на параметрах функции
     request = f"""UPDATE {table} SET """
     for column, value in update_data.items():
         request += f"{column} = {value}, "
@@ -42,6 +47,7 @@ def update_data_in_db(db: str, table: str, update_data: dict, conditions: dict) 
     for column, value in conditions.items():
         request += f"{column} = '{value}' AND "
     request = request[:-5]
+    #
 
     print(request)
     cur.execute(request)
@@ -65,10 +71,12 @@ def delete_data_from_db(db: str, table: str, conditions: dict, not_fl=False) -> 
 
     request = f"""DELETE FROM {table}{' WHERE ' if conditions else ''}"""
 
+    # Создание запроса, основываясь на параметрах функции
     for column, value in conditions.items():
         request += f"""{column}{' NOT' if not_fl else ''} IN ('{"', '".join(value)}') AND """
     if conditions:
         request = request[:-5]
+    #
 
     print(request)
     cur.execute(request)
@@ -96,6 +104,7 @@ def get_data_from_db(db: str, table: str, columns: str,
     con = sqlite3.connect(db)
     cur = con.cursor()
 
+    # Создание запроса, основываясь на параметрах функции
     request = f"""SELECT {'DISTINCT ' if is_distinct else ''}{columns} FROM {table}"""
 
     if conditions_equal:
@@ -115,6 +124,7 @@ def get_data_from_db(db: str, table: str, columns: str,
         for column, order_type in ordering.items():
             request += f"{column} {'ASC' if order_type == 0 else 'DESC'}, "
         request = request[:-2]
+    #
 
     print(request)
     res = cur.execute(request).fetchall()
@@ -125,9 +135,13 @@ def get_data_from_db(db: str, table: str, columns: str,
 
 
 if __name__ == '__main__':
+    ####
+    # !!! Внимание, данный код моежт изменить состояние базы данных, запускать только осознанно !!!
     print(*get_data_from_db('clients.db', 'clients', '*', conditions_like={'name': '%уко%'},
                             ordering={'name': 0}), sep='\n')
     dates = get_data_from_db('clients.db', 'payments_table', 'id, date')
 
-    for cl_id, date in dates:
-        update_data_in_db('clients.db', 'payments_table', {'date': f"'{'.'.join(map(lambda x: x.rjust(2, '0'), date.split('.')[::-1]))}'"}, {'id': cl_id})
+    for cl_id, cl_date in dates:
+        d_info = '.'.join(map(lambda x: x.rjust(2, '0'), cl_date.split('.')[::-1]))
+        update_data_in_db('clients.db', 'payments_table', {'date': f"'{d_info}'"}, {'id': cl_id})
+    ####

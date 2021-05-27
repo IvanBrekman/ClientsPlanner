@@ -3,6 +3,10 @@ from collections import Counter
 
 from database_requests import *
 
+"""
+        Данный модуль реализует функции обновления данных в бд
+"""
+
 MY_DB = "clients.db"
 
 
@@ -22,13 +26,13 @@ def update_data_in_new_day() -> None:
 
 
 def update_lessons_amount(last_session: dt.date, today: dt.date) -> None:
-    """ Обновление количества занятий """
+    """ Обновление количества занятий у всех активныз пользователей """
 
     all_clients_id = Counter()
-    for date in date_range(last_session, today):
-        date = date.strftime('%Y.%m.%d')
+    for d in date_range(last_session, today):
+        d = d.strftime('%Y.%m.%d')
         clients_id = [res[0] for res in get_data_from_db(MY_DB, 'clients_attendance', 'client_id',
-                                                         {'date': [date]})]
+                                                         {'date': [d]})]
         all_clients_id += Counter(clients_id)
     print(all_clients_id)
     for client_id in all_clients_id:
@@ -47,7 +51,7 @@ def update_lessons_and_non_active_duration(last_session: dt.date, today: dt.date
 
 
 def update_month_report(month_num: str, year_num: str) -> None:
-    """ Обновление месячного отчета при: 1) Добавлении/удалении клиента, 2) Внесении оплаты """
+    """ Обновление отчета при: 1) Добавлении/удалении клиента, 2) Внесении/удалении оплаты """
 
     clients = get_data_from_db(MY_DB, 'clients_attendance', 'id',
                                conditions_like={'date': f'{year_num}.{month_num.rjust(2, "0")}.%'})
@@ -74,6 +78,8 @@ def date_range(start_date: dt.date, end_date: dt.date) -> iter:
 
 
 if __name__ == '__main__':
-    # print(*date_range(dt.date(2020, 11, 1), dt.date(2020, 12, 5)), sep='\n')
-    # update_month_report('12', '2020')
-    pass
+    ####
+    # !!! Внимание, данный код моежт изменить состояние базы данных, запускать только осознанно !!!
+    print(*date_range(dt.date(2020, 11, 1), dt.date(2020, 12, 5)), sep='\n')
+    update_month_report('12', '2020')
+    ####

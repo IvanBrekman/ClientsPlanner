@@ -1,35 +1,47 @@
 import datetime as dt
 
+"""
+        Данный модуль реализует функции проверки корректности различных данных
+"""
 
+
+# Классы пользовательских ошибок
 class FormatError(Exception):
-    def message(self):
+    @staticmethod
+    def message():
         return 'Неверный формат номера телефона.'
 
 
 class LenNumberError(Exception):
-    def message(self):
+    @staticmethod
+    def message():
         return 'Неверное количество цифр в номере телефона.'
 
 
 class NameFormatError(Exception):
-    def message(self):
+    @staticmethod
+    def message():
         return f'                                       Неверный формат ФИО.\n' \
                f'Должно присутствовать хотя бы имя и фамилия, разделенные пробелом.'
 
 
 class DigitInNameError(Exception):
-    def message(self):
+    @staticmethod
+    def message():
         return 'Неверный формат ФИО. Присутствуют числа или другие недопустимые символы.'
 
 
 class BusyTimeError(Exception):
-    def message(self):
+    @staticmethod
+    def message():
         return 'В данное время уже проходит занятие. Выберите другое время.'
 
 
 class WrongEndTimeError(Exception):
-    def message(self):
+    @staticmethod
+    def message():
         return 'Время окончания раньше времени начала или совпадает с ним. Выберите другое время.'
+#
 
 
 def convert_number(number: str) -> str:
@@ -74,6 +86,8 @@ def convert_number(number: str) -> str:
 
 
 def check_correct_bracket_seq(checked_sequence: str) -> bool:
+    """ Функция проверяет корректную скобочную последовательность """
+
     count = 0
     for el in checked_sequence:
         if el == '(':
@@ -96,7 +110,7 @@ def convert_name(name: str) -> str:
     try:
         if len(name) == 0 or len(name.split(' ')) < 2:
             raise NameFormatError
-        if not all(sym.isalpha() for sym in name.replace(' ', '')):  # Добавить ограничение на Кириллицу
+        if not all(sym.isalpha() for sym in name.replace(' ', '')):
             raise DigitInNameError
 
         name = ' '.join(map(str.capitalize, name.split()))
@@ -119,8 +133,8 @@ def check_correct_time(start_time: dt.time, end_time: dt.time, time_intervals: l
             raise WrongEndTimeError
         if any([t[0] <= start_time < t[1] or t[0] < end_time <= t[1] for t in time_intervals]):
             raise BusyTimeError
-    except WrongEndTimeError as wete:
-        return wete.message()
+    except WrongEndTimeError as wet:
+        return wet.message()
     except BusyTimeError as bte:
         return bte.message()
     return True
